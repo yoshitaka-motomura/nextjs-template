@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 
 // Jestのグローバル型定義を明示的に設定
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
     interface Matchers<R> {
       toBeInTheDocument(): R
