@@ -32,8 +32,12 @@ src/
 │   ├── api/               # API utilities
 │   ├── hooks/             # Custom hooks
 │   └── types/             # Type definitions
-├── __tests__/              # Test files
+├── __tests__/              # Unit test files
 └── styles/                 # Additional CSS files
+e2e/                        # E2E test files (Playwright)
+├── home.spec.ts           # Home page E2E tests
+├── api.spec.ts            # API endpoint E2E tests
+└── README.md              # E2E testing guide
 ```
 
 ## 🚀 Common Commands
@@ -43,6 +47,7 @@ src/
 - **Production**: `pnpm start`
 - **Lint**: `pnpm lint`
 - **Test**: `pnpm test` / `pnpm test:watch`
+- **E2E Test**: `pnpm e2e` / `pnpm e2e:ui` / `pnpm e2e:headed`
 - **Format**: `pnpm format` / `pnpm format:check`
 
 ## 💻 Coding Guidelines
@@ -73,13 +78,17 @@ src/
 
 ### Test Structure
 - **Unit Tests**: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
-- **Framework**: Jest with jsdom + babel-jest
-- **DOM Testing**: Use Testing Library patterns
+- **E2E Tests**: `e2e/**/*.spec.ts`
+- **Unit Framework**: Jest with jsdom + babel-jest
+- **E2E Framework**: Playwright with multiple browsers
+- **DOM Testing**: Use Testing Library patterns for unit tests
 
 ### Testing Principles
 - **Minimal Mocking**: Mock at boundaries, not implementation details
 - **Stability**: Prevent flaky tests with explicit waiting/timing
 - **API Testing**: Test public APIs and behavior, not internal implementation
+- **E2E Focus**: Test user workflows and critical paths
+- **Semantic Selectors**: Use `getByRole`, `getByText` over CSS selectors
 
 ## 🎨 Styling Guidelines
 
@@ -145,7 +154,8 @@ Use Conventional Commits with emojis:
 Before committing, ensure:
 - [ ] TypeScript compilation passes
 - [ ] ESLint passes (`pnpm lint`)
-- [ ] Tests pass (`pnpm test`)
+- [ ] Unit tests pass (`pnpm test`)
+- [ ] E2E tests pass (`pnpm e2e`) - if UI changes
 - [ ] Build succeeds (`pnpm build`)
 - [ ] Changes follow existing patterns
 - [ ] No sensitive information is included
