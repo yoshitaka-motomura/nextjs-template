@@ -29,9 +29,34 @@
 - `src/app/globals.css` グローバルスタイル（Tailwind v4）
  - `src/app/api/health/route.ts` ヘルスチェック API（GET/HEAD, no-cache）
  - `src/components/ui/*` shadcn/ui コンポーネント群
+- `src/lib/` 共有ユーティリティ・アクション
+ - `src/lib/utils.ts` ユーティリティ関数
+ - `src/lib/actions/*` 複数ページで使用するServer Actions
 - `public/` 静的アセット
 - 設定: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
  - `components.json` shadcn/ui 設定（style/baseColor/aliases）
+
+#### ページ固有のファイル構成
+各ルートディレクトリ内では以下の構成を使用：
+
+```
+src/app/[route]/
+├── _components/          # ページ固有コンポーネント（アンダースコアでルーティング回避）
+│   ├── ComponentName.tsx # PascalCase命名
+│   └── FormComponent.tsx
+├── _actions/            # ページ固有Server Actions（アンダースコアでルーティング回避）
+│   ├── create-item.ts   # kebab-case命名、機能別ファイル
+│   ├── update-item.ts
+│   └── delete-item.ts
+├── page.tsx
+└── layout.tsx
+```
+
+**ファイル配置指針：**
+- **ページ固有コンポーネント**: `src/app/[route]/_components/`
+- **全体共有コンポーネント**: `src/components/ui/` (shadcn/ui)
+- **ページ固有Server Actions**: `src/app/[route]/_actions/`
+- **全体共有Server Actions**: `src/lib/actions/`
 
 ---
 
@@ -61,6 +86,14 @@
 - サーバーアクション/ルートハンドラを優先してデータ取得。`fetch` はキャッシュ戦略を明記。
 - React 19 API を使用しても、互換性と安定性を優先（不安定機能は避ける）  
 - メタデータは App Router の `metadata`/`generateMetadata` を用いる
+
+### Server Actions ベストプラクティス
+- ファイル先頭に `'use server'` ディレクティブを必須記述
+- フォームデータのバリデーションを必ず実行
+- エラーハンドリング（try-catch）を適切に実装
+- データ変更後は `revalidatePath()` または `revalidateTag()` を使用
+- 機能別にファイルを分割（例：`create-user.ts`, `update-user.ts`）
+- 単一責任の原則を守る（1ファイル1機能）
 
 ### Tailwind CSS v4
 - ユーティリティ優先。意味の重複するカスタム CSS を増やさない
