@@ -9,8 +9,12 @@ pnpm dev           # 開発（Turbopack）
 pnpm build         # ビルド（Turbopack）
 pnpm start         # 本番サーバ
 pnpm lint          # ESLint (flat config)
-pnpm test          # Jest
+pnpm test          # Jest（ユニットテスト）
 pnpm test:watch    # Jest ウォッチ
+pnpm e2e           # Playwright（E2Eテスト）
+pnpm e2e:ui        # E2Eテスト（UIモード）
+pnpm e2e:headed    # E2Eテスト（ブラウザ表示）
+pnpm e2e:report    # E2Eテストレポート表示
 pnpm format        # Prettier で整形
 pnpm format:check  # Prettier チェック
 ```
@@ -23,7 +27,7 @@ pnpm format:check  # Prettier チェック
 - Radix UI 一部（Label/Slot）
 - class-variance-authority / clsx / tailwind-merge
 - react-icons（アイコン）
-- Jest（jsdom + babel-jest） / Prettier / ESLint v9（flat）
+- Jest（jsdom + babel-jest） / Playwright（E2E） / Prettier / ESLint v9（flat）
 
 `package.json` 抜粋（バージョンはロックファイル参照）:
 
@@ -49,6 +53,7 @@ pnpm format:check  # Prettier チェック
     "jest-environment-jsdom": "^30",
     "babel-jest": "^30",
     "@babel/core": "^7",
+    "@playwright/test": "^1.55",
     "prettier": "^3",
     "typescript": "^5"
   }
@@ -83,12 +88,17 @@ pnpm format:check  # Prettier チェック
 │  │  └─ utils.ts               # shadcn 初期化で追加
 │  ├─ messages/
 │  ├─ styles/
-│  └─ __tests__/                # テスト
+│  └─ __tests__/                # ユニットテスト
+├─ e2e/                         # E2Eテスト（Playwright）
+│  ├─ home.spec.ts
+│  ├─ api.spec.ts
+│  └─ README.md
 ├─ public/
 │  ├─ images/
 │  ├─ fonts/
 │  └─ *.svg
 ├─ components.json              # shadcn 設定
+├─ playwright.config.ts         # Playwright E2E設定
 ├─ eslint.config.mjs            # ESLint フラット設定
 ├─ postcss.config.mjs           # Tailwind v4 用 PostCSS
 ├─ next.config.ts
@@ -102,7 +112,21 @@ pnpm format:check  # Prettier チェック
 - API ルートは `src/app/api/**/route.ts`。
 - `@/*` → `src/*` のパスエイリアス。
 - Jest は `jsdom` 環境、`babel-jest` で `next/babel` を使用。
+- Playwright は Chrome/Firefox/Safari + Mobile でのE2Eテスト。
 - Prettier 設定は `package.json` に記載（整形は `pnpm format`）。
+
+### テスト
+
+#### ユニットテスト（Jest）
+- `src/__tests__/` にテストファイルを配置
+- ユーティリティ関数やコンポーネントの単体テスト
+- `pnpm test` で実行、`pnpm test:watch` でウォッチモード
+
+#### E2Eテスト（Playwright）
+- `e2e/` にテストファイルを配置
+- ブラウザでの実際のユーザー操作をテスト
+- `pnpm e2e` で実行、`pnpm e2e:ui` でUIモード
+- Chrome、Firefox、Safari、Mobile Chrome、Mobile Safari で実行
 
 ### ヘルスチェック
 
