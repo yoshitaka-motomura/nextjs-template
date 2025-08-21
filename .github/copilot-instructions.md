@@ -19,6 +19,11 @@
 ```
 src/
 ├── app/                    # App Router pages/layouts/route handlers
+│   ├── [route]/           # Example page route
+│   │   ├── _components/   # Page-specific components (underscore prevents routing)
+│   │   ├── _actions/      # Page-specific Server Actions (underscore prevents routing)
+│   │   ├── page.tsx       # Page component
+│   │   └── layout.tsx     # Route layout (optional)
 │   ├── api/               # API routes
 │   ├── globals.css        # Global styles (Tailwind v4)
 │   ├── layout.tsx         # Root layout (Geist fonts)
@@ -29,6 +34,7 @@ src/
 │   └── layout/            # Layout components
 ├── lib/                    # Utilities and business logic
 │   ├── utils.ts           # Utility functions
+│   ├── actions/           # Shared Server Actions (cross-page usage)
 │   ├── api/               # API utilities
 │   ├── hooks/             # Custom hooks
 │   └── types/             # Type definitions
@@ -38,6 +44,31 @@ e2e/                        # E2E test files (Playwright)
 ├── home.spec.ts           # Home page E2E tests
 ├── api.spec.ts            # API endpoint E2E tests
 └── README.md              # E2E testing guide
+```
+
+### Page-Specific Organization Rules
+
+**Components:**
+- **Page-specific**: `src/app/[route]/_components/ComponentName.tsx` (PascalCase)
+- **Global/shared**: `src/components/ui/` (shadcn/ui components)
+
+**Server Actions:**
+- **Page-specific**: `src/app/[route]/_actions/action-name.ts` (kebab-case, one function per file)
+- **Global/shared**: `src/lib/actions/` (for cross-page usage)
+
+**Example structure:**
+```
+src/app/users/
+├── _components/
+│   ├── UserCard.tsx
+│   ├── UserForm.tsx
+│   └── UserList.tsx
+├── _actions/
+│   ├── create-user.ts
+│   ├── update-user.ts
+│   └── delete-user.ts
+├── page.tsx
+└── layout.tsx
 ```
 
 ## 🚀 Common Commands
@@ -62,6 +93,14 @@ e2e/                        # E2E test files (Playwright)
 - **Props Design**: Explicit typing, split complex props into objects, use default values.
 - **State Management**: Minimize state, avoid derived state, use `useEffect` for side effects.
 - **Routing**: Place API routes in `src/app/api/**/route.ts`. Use `NextResponse` with explicit headers.
+
+### Server Actions Best Practices
+- **`'use server'` Directive**: Always include at the top of action files
+- **Input Validation**: Validate all form data and parameters
+- **Error Handling**: Use try-catch blocks with proper error responses
+- **Revalidation**: Use `revalidatePath()` or `revalidateTag()` after data mutations
+- **File Organization**: One function per file, named by purpose (e.g., `create-user.ts`)
+- **Single Responsibility**: Each action should focus on one specific task
 
 ### UI (Tailwind v4 / shadcn/ui)
 - **Utility-First**: Use Tailwind utilities before custom CSS.
