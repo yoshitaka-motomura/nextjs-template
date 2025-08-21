@@ -38,11 +38,37 @@ This is a Next.js 15 project using the App Router architecture with the followin
 - `src/app/page.tsx` - Home page component
 - `src/app/api/health/route.ts` - Health check endpoint (GET/HEAD, no-cache)
 - `src/components/ui/` - shadcn/ui components (e.g., `button.tsx`, `input.tsx`)
-- `src/lib/utils.ts` - Utility helpers (added by shadcn init)
+- `src/lib/` - Shared utilities and actions
+  - `src/lib/utils.ts` - Utility helpers (added by shadcn init)
+  - `src/lib/actions/` - Shared Server Actions (cross-page usage)
 - `src/__tests__/` - Unit tests (Jest)
 - `e2e/` - End-to-end tests (Playwright)
 - `public/` - Static assets (`images/`, `fonts/`, SVG icons)
 - `components.json` - shadcn/ui configuration
+
+#### Page-Specific Organization
+For page-specific components and Server Actions, organize them within each route directory:
+
+```
+src/app/[route]/
+├── _components/          # Page-specific components (underscore prevents routing)
+│   ├── ComponentName.tsx
+│   └── FormComponent.tsx
+├── _actions/            # Page-specific Server Actions (underscore prevents routing)
+│   ├── create-item.ts   # One action per file (recommended)
+│   ├── update-item.ts
+│   └── delete-item.ts
+├── page.tsx
+└── layout.tsx
+```
+
+**Guidelines:**
+- Use `_components/` for components used only within that route
+- Use `_actions/` for Server Actions specific to that route
+- Name action files by function (e.g., `create-user.ts`, `update-profile.ts`)
+- Each action file should contain related Server Actions with `'use server'` directive
+- Global/shared components go in `src/components/ui/`
+- Global/shared Server Actions go in `src/lib/actions/`
 
 ### Configuration Files
 - `next.config.ts` - Next.js config
