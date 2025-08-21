@@ -4,12 +4,14 @@
 
 ### 推奨スタック
 - ユニット/コンポーネント: Jest + Testing Library (React)
-- E2E: Playwright（必要時）
+- E2E: Playwright（導入済み）
 
 `package.json` のスクリプト:
 - `test`: jest 実行
 - `test:watch`: jest の watch 実行
-- `e2e`: playwright テスト（導入時）
+- `e2e`: playwright テスト実行
+- `e2e:ui`: playwright UI モード
+- `e2e:headed`: playwright ブラウザ表示モード
 
 ### 配置規約
 - ユニット: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
@@ -21,6 +23,7 @@
 - **実装結合の低減**: 内部実装ではなく、公開 API/挙動を検証。
   
 - **サーバー**: ルートハンドラ/サーバーアクションは入出力と副作用を検証。
+- **E2E**: ユーザーの重要なワークフローと API エンドポイントをテスト。
 
 ### next-intl の簡易モック例
 ```ts
@@ -41,7 +44,11 @@ export function withIntl(children: ReactNode, locale: string = 'ja', messages: R
 ### E2E の指針（Playwright）
 - 重要シナリオのみ（クリティカルパス）。
 - `data-testid` 依存は最小化し、可能な限りアクセシビリティセレクタを使用。
+- `getByRole`, `getByText`, `getByLabel` を優先的に使用。
+- レスポンシブ対応のテスト（デスクトップ・タブレット・モバイル）。
+- API エンドポイントの直接テスト（request fixture 使用）。
 
 ### 実行チェック
 - 追加後は `pnpm lint` と `pnpm test` が通ること。
+- UI 変更時は `pnpm e2e` で E2E テストも実行。
 - CI 導入時はキャッシュと並列性を考慮し安定実行を優先。
