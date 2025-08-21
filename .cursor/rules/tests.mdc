@@ -1,0 +1,47 @@
+## Testing Rules (Cursor) — myapps-nextjs
+
+このプロジェクトのテスト方針と推奨構成です。未導入の場合、導入理由を明記の上で最小依存で追加してください。
+
+### 推奨スタック
+- ユニット/コンポーネント: Jest + Testing Library (React)
+- E2E: Playwright（必要時）
+
+`package.json` のスクリプト:
+- `test`: jest 実行
+- `test:watch`: jest の watch 実行
+- `e2e`: playwright テスト（導入時）
+
+### 配置規約
+- ユニット: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
+- E2E: `e2e/**.spec.ts`
+
+### テスト方針
+- **最小モック**: ネットワークは MSW などで境界単位にモック。
+- **安定性**: フレーク防止（待機/タイミングの明示）。
+- **実装結合の低減**: 内部実装ではなく、公開 API/挙動を検証。
+  
+- **サーバー**: ルートハンドラ/サーバーアクションは入出力と副作用を検証。
+
+### next-intl の簡易モック例
+```ts
+// test/utils/intl.tsx
+import { ReactNode } from 'react';
+import { IntlProvider } from 'next-intl';
+
+export function withIntl(children: ReactNode, locale: string = 'ja', messages: Record<string, string> = {}) {
+  return <IntlProvider locale={locale} messages={messages}>{children}</IntlProvider>;
+}
+```
+
+### コンポーネントテストの指針
+- ユーザー操作は Testing Library で記述。
+- ARIA ロール/ラベルで要素を取得。
+- スナップショットは最小限。
+
+### E2E の指針（Playwright）
+- 重要シナリオのみ（クリティカルパス）。
+- `data-testid` 依存は最小化し、可能な限りアクセシビリティセレクタを使用。
+
+### 実行チェック
+- 追加後は `pnpm lint` と `pnpm test` が通ること。
+- CI 導入時はキャッシュと並列性を考慮し安定実行を優先。

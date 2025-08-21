@@ -1,0 +1,122 @@
+## Cursor Project Rules for myapps-nextjs
+
+このファイルは Cursor の AI に対するプロジェクト固有のルール/コンテキストです。以下を厳守してください。
+
+### プロジェクト概要
+- **フレームワーク**: Next.js 15.5 (App Router)
+- **React**: 19.1
+- **TypeScript**: strict
+- **Styling**: Tailwind CSS v4 + PostCSS
+- **i18n**: next-intl
+- **Bundler**: Turbopack (dev/build)
+- **パッケージマネージャ**: pnpm
+- **パスエイリアス**: `@/*` → `src/*`
+ - **UI**: shadcn/ui（`components.json` による管理）
+ - **Icons**: react-icons（lucide-react は使用しない）
+
+### よく使うコマンド（必ず pnpm を使用）
+- 開発: `pnpm dev`
+- ビルド: `pnpm build`
+- 本番起動: `pnpm start`
+- Lint: `pnpm lint`
+ - テスト: `pnpm test` / 監視: `pnpm test:watch`
+ - 整形: `pnpm format` / チェック: `pnpm format:check`
+
+### ディレクトリ構成（主要）
+- `src/app/` App Router の pages/layouts/route handlers
+- `src/app/layout.tsx` ルートレイアウト（Geist フォント）
+- `src/app/page.tsx` トップページ
+- `src/app/globals.css` グローバルスタイル（Tailwind v4）
+ - `src/app/api/health/route.ts` ヘルスチェック API（GET/HEAD, no-cache）
+ - `src/components/ui/*` shadcn/ui コンポーネント群
+- `public/` 静的アセット
+- 設定: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`
+ - `components.json` shadcn/ui 設定（style/baseColor/aliases）
+
+---
+
+### AI 作業ポリシー（必読）
+1. 変更前にコード探索を行うこと。
+   - ripgrep 相当の検索で用途/宣言/依存の範囲を把握。
+   - `@/*` エイリアスを理解してパスを解決。
+2. 変更は最小限・高品質・可逆に。
+   - 関連のないリファクタは行わない。
+   - 既存のコードスタイル・設計に合わせる。
+3. 変更後は必ず検証。
+   - 型チェックと Lint を通す（可能ならビルド確認）。
+   - ランタイム影響がある場合は簡易の自己確認コード/ストーリーを追加。
+4. 依存追加時は pnpm を使用し、理由を記述。
+5. 機密情報をコミットしない（API Key, 環境変数, 秘匿 URL）。
+6. ドキュメント/コメントは要点のみ。設計意図（Why）を短く添える。
+
+### コーディング規約（要約）
+- 命名: 省略せず意味のある名前。関数は動詞、変数は名詞。
+- 型: 公開 API は明示注釈。不要な any/unsafe cast を避ける。
+- 制御: 早期 return、ネストを浅く、例外は目的を持って扱う。
+- コメント: 仕組みではなく意図を書く。冗長なコメントは避ける。
+- フォーマット: 既存のスタイルに合わせ、長行は折り返す。
+
+### Next.js 15 / React 19 の指針
+- サーバーコンポーネントがデフォルト。クライアントが必要な場合のみファイル先頭に `"use client"`。
+- サーバーアクション/ルートハンドラを優先してデータ取得。`fetch` はキャッシュ戦略を明記。
+- React 19 API を使用しても、互換性と安定性を優先（不安定機能は避ける）  
+- メタデータは App Router の `metadata`/`generateMetadata` を用いる
+
+### Tailwind CSS v4
+- ユーティリティ優先。意味の重複するカスタム CSS を増やさない
+- カラー/スペーシングは既定スケールを優先。カスタムは変数化
+- コンポーネント化は過度に行わず、再利用価値がある場合のみ
+
+### UI（shadcn/ui）
+- 既存の `src/components/ui/*` を優先的に利用・拡張
+- 新規追加は `pnpm dlx shadcn add <component>` を使用
+- `components.json` の `iconLibrary` は `none`。アイコンは react-icons を利用
+
+### Icons（react-icons）
+- `react-icons` を使用（例: `import { FaGithub } from 'react-icons/fa'`）
+- 旧 `lucide-react` は使用しない。
+
+
+
+### パフォーマンスとアクセシビリティ
+- 画像は `next/image` を使用。適切な `sizes` と `priority` を検討。
+- 動的コード分割を活用し、不要なクライアント JS を削減。
+- a11y 属性（`aria-*`、ラベル）を適切に付与。
+
+### Git / コミット / PR
+- コミットメッセージ: Conventional Commits 準拠（例: `feat: ...`, `fix: ...`）
+- メッセージは Why を1-2文で簡潔に。機微情報を含めない。
+- 1 PR = 1 目的。要約/テスト観点を本文に記載。
+- コミットメッセージの先頭にアイコンを追加してください
+　 - feat: ✨
+　 - fix: ✏️
+　 - docs: 📝
+　 - refactor: 🔄
+　 - test: 🧪
+　 - chore: 🧹
+　 - style: 🎨
+　 - perf: 🚀
+　 - ci: 🤖
+
+### 追加ルール
+- 新規ツール/ライブラリの採用は軽量性と保守性を最優先。
+- 既存の設計（ファイル構成、命名、関数境界）に合わせる。
+- 自動生成ファイルは極力コミットしない。
+ - Jest を使用（`jsdom` + `babel-jest`）。CSS は `identity-obj-proxy` でモック
+ - コーディング規約は `coding.mdc` を参照（TypeScript/React/Next.js/Tailwind）
+
+
+---
+
+### 作業チェックリスト（変更毎）
+- [ ] 影響範囲を検索で確認した
+- [ ] 型チェック/ESLint を通した（`pnpm lint`）
+- [ ] ビルド/実行に問題がない（`pnpm build`/`pnpm dev`）
+- [ ] Tailwind/SSR 方針に反していない
+- [ ] コミットメッセージが目的と Why を示す
+
+int を通した（`pnpm lint`）
+- [ ] ビルド/実行に問題がない（`pnpm build`/`pnpm dev`）
+- [ ] i18n/Tailwind/SSR 方針に反していない
+- [ ] コミットメッセージが目的と Why を示す
+

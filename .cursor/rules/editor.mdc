@@ -1,0 +1,48 @@
+## Editor Rules (Cursor) — myapps-nextjs
+
+このファイルは Cursor に対する編集方針です。既存設計とスタイルを尊重し、関連外の変更は行わないでください。
+
+### 基本方針
+- **最小差分**: 目的達成に必要な範囲のみ編集。
+- **整合性**: TypeScript strict を満たし、ESLint を通す。
+- **構造**: App Router 構成を壊さない。`@/*` エイリアスを使用。
+
+### Next.js / React ルール
+- サーバーコンポーネントがデフォルト。クライアント必須の場合のみ先頭に `"use client"`。
+- データ取得はサーバー側（サーバーアクション/ルートハンドラ）を優先。
+- `fetch` はキャッシュ戦略を明記（`{ cache: 'no-store' }` or `{ next: { revalidate } }`）。
+- 画像は `next/image`、リンクは `next/link` を使用。
+- メタデータは `metadata` / `generateMetadata` を使用。
+
+### ファイル/配置
+- ページ: `src/app/**/page.tsx`
+- レイアウト: `src/app/**/layout.tsx`
+- ルートハンドラ: `src/app/api/**/route.ts`
+- グローバル CSS は `src/app/globals.css` のみ。局所スタイルは Tailwind を優先。
+- 再利用 UI は `src/components/**`。ビジネス/ユーティリティは `src/lib/**`。
+- shadcn/ui コンポーネントは `src/components/ui/*` に配置。
+
+### Tailwind v4
+- ユーティリティ優先。任意値は必要最小限。
+- ダークモード/レスポンシブはユーティリティで表現。
+- カスタム CSS が必要な場合、CSS 変数で意味を保つ。
+
+
+
+### アクセシビリティ/パフォーマンス
+- 適切な `aria-*` とラベル。
+- 不要なクライアント JS を避け、動的 import を検討。
+- 画像に `sizes`、重要画像に `priority`。
+
+### 依存追加
+- 必要性を明記し、軽量性/保守性を優先。追加後は `pnpm i` を使用。
+ - アイコンは `react-icons` を使用（`lucide-react` は使用しない）。
+ - UI コンポーネント追加時は `pnpm dlx shadcn add <component>` を推奨。
+
+### 変更後チェック
+- `pnpm lint` で型/ESLint を確認。
+- 影響範囲を検索し副作用を確認。
+ - UI 変更は `pnpm build` でビルド確認。
+
+### コミット
+- Conventional Commits。メッセージは Why を1-2文で。機微情報は含めない。
