@@ -1,48 +1,46 @@
 ## Editor Rules (Cursor) — myapps-nextjs
 
-このファイルは Cursor に対する編集方針です。既存設計とスタイルを尊重し、関連外の変更は行わないでください。
+This file contains editing guidelines for Cursor. Please respect existing design and style, and do not make unrelated changes.
 
-### 基本方針
-- **最小差分**: 目的達成に必要な範囲のみ編集。
-- **整合性**: TypeScript strict を満たし、ESLint を通す。
-- **構造**: App Router 構成を壊さない。`@/*` エイリアスを使用。
+### Basic Principles
+- **Minimal Changes**: Edit only the scope necessary to achieve the goal.
+- **Consistency**: Satisfy TypeScript strict mode and pass ESLint.
+- **Structure**: Don't break App Router configuration. Use `@/*` alias.
 
-### Next.js / React ルール
-- サーバーコンポーネントがデフォルト。クライアント必須の場合のみ先頭に `"use client"`。
-- データ取得はサーバー側（サーバーアクション/ルートハンドラ）を優先。
-- `fetch` はキャッシュ戦略を明記（`{ cache: 'no-store' }` or `{ next: { revalidate } }`）。
-- 画像は `next/image`、リンクは `next/link` を使用。
-- メタデータは `metadata` / `generateMetadata` を使用。
+### Next.js / React Rules
+- Server components are default. Add `"use client"` at top only when client-side is necessary.
+- Prioritize server-side data fetching (server actions/route handlers).
+- Document cache strategy for `fetch` (`{ cache: 'no-store' }` or `{ next: { revalidate } }`).
+- Use `next/image` for images, `next/link` for links.
+- Use `metadata` / `generateMetadata` for metadata.
 
-### ファイル/配置
-- ページ: `src/app/**/page.tsx`
-- レイアウト: `src/app/**/layout.tsx`
-- ルートハンドラ: `src/app/api/**/route.ts`
-- グローバル CSS は `src/app/globals.css` のみ。局所スタイルは Tailwind を優先。
-- 再利用 UI は `src/components/**`。ビジネス/ユーティリティは `src/lib/**`。
-- shadcn/ui コンポーネントは `src/components/ui/*` に配置。
+### Files / Placement
+- Pages: `src/app/**/page.tsx`
+- Layouts: `src/app/**/layout.tsx`
+- Route handlers: `src/app/api/**/route.ts`
+- Global CSS only in `src/app/globals.css`. Prioritize Tailwind for local styles.
+- Reusable UI in `src/components/**`. Business/utilities in `src/lib/**`.
+- shadcn/ui components in `src/components/ui/*`.
 
 ### Tailwind v4
-- ユーティリティ優先。任意値は必要最小限。
-- ダークモード/レスポンシブはユーティリティで表現。
-- カスタム CSS が必要な場合、CSS 変数で意味を保つ。
+- Utility first. Arbitrary values only when necessary.
+- Express dark mode/responsive with utilities.
+- When custom CSS is needed, preserve meaning with CSS variables.
 
+### Accessibility / Performance
+- Appropriate `aria-*` and labels.
+- Avoid unnecessary client JS, consider dynamic imports.
+- `sizes` for images, `priority` for important images.
 
+### Dependency Addition
+- Document necessity and prioritize lightness/maintainability. Use `pnpm i` after addition.
+- Use `react-icons` for icons (do not use `lucide-react`).
+- Recommend `pnpm dlx shadcn add <component>` when adding UI components.
 
-### アクセシビリティ/パフォーマンス
-- 適切な `aria-*` とラベル。
-- 不要なクライアント JS を避け、動的 import を検討。
-- 画像に `sizes`、重要画像に `priority`。
+### Post-Change Verification
+- Confirm types/ESLint with `pnpm lint`.
+- Search impact scope and verify side effects.
+- Verify build with `pnpm build` for UI changes.
 
-### 依存追加
-- 必要性を明記し、軽量性/保守性を優先。追加後は `pnpm i` を使用。
- - アイコンは `react-icons` を使用（`lucide-react` は使用しない）。
- - UI コンポーネント追加時は `pnpm dlx shadcn add <component>` を推奨。
-
-### 変更後チェック
-- `pnpm lint` で型/ESLint を確認。
-- 影響範囲を検索し副作用を確認。
- - UI 変更は `pnpm build` でビルド確認。
-
-### コミット
-- Conventional Commits。メッセージは Why を1-2文で。機微情報は含めない。
+### Commits
+- Conventional Commits. Messages explain Why in 1-2 sentences. Don't include sensitive information.

@@ -1,31 +1,30 @@
 ## Testing Rules (Cursor) — myapps-nextjs
 
-このプロジェクトのテスト方針と推奨構成です。未導入の場合、導入理由を明記の上で最小依存で追加してください。
+This document outlines the testing policy and recommended configuration for this project. If not yet introduced, please add with minimal dependencies after documenting the reason.
 
-### 推奨スタック
-- ユニット/コンポーネント: Jest + Testing Library (React)
-- E2E: Playwright（導入済み）
+### Recommended Stack
+- Unit/Component: Jest + Testing Library (React)
+- E2E: Playwright (already introduced)
 
-`package.json` のスクリプト:
-- `test`: jest 実行
-- `test:watch`: jest の watch 実行
-- `e2e`: playwright テスト実行
-- `e2e:ui`: playwright UI モード
-- `e2e:headed`: playwright ブラウザ表示モード
+Scripts in `package.json`:
+- `test`: jest execution
+- `test:watch`: jest watch execution
+- `e2e`: playwright test execution
+- `e2e:ui`: playwright UI mode
+- `e2e:headed`: playwright browser display mode
 
-### 配置規約
-- ユニット: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
+### Placement Conventions
+- Unit: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
 - E2E: `e2e/**.spec.ts`
 
-### テスト方針
-- **最小モック**: ネットワークは MSW などで境界単位にモック。
-- **安定性**: フレーク防止（待機/タイミングの明示）。
-- **実装結合の低減**: 内部実装ではなく、公開 API/挙動を検証。
-  
-- **サーバー**: ルートハンドラ/サーバーアクションは入出力と副作用を検証。
-- **E2E**: ユーザーの重要なワークフローと API エンドポイントをテスト。
+### Testing Policy
+- **Minimal Mocking**: Mock networks with MSW etc. at boundary units.
+- **Stability**: Prevent flakiness (explicit waiting/timing).
+- **Reduce Implementation Coupling**: Verify public APIs/behavior, not internal implementation.
+- **Server**: Verify inputs/outputs and side effects for route handlers/server actions.
+- **E2E**: Test critical user workflows and API endpoints.
 
-### next-intl の簡易モック例
+### next-intl Simple Mock Example
 ```ts
 // test/utils/intl.tsx
 import { ReactNode } from 'react';
@@ -36,19 +35,19 @@ export function withIntl(children: ReactNode, locale: string = 'ja', messages: R
 }
 ```
 
-### コンポーネントテストの指針
-- ユーザー操作は Testing Library で記述。
-- ARIA ロール/ラベルで要素を取得。
-- スナップショットは最小限。
+### Component Testing Guidelines
+- Describe user operations with Testing Library.
+- Get elements using ARIA roles/labels.
+- Minimize snapshots.
 
-### E2E の指針（Playwright）
-- 重要シナリオのみ（クリティカルパス）。
-- `data-testid` 依存は最小化し、可能な限りアクセシビリティセレクタを使用。
-- `getByRole`, `getByText`, `getByLabel` を優先的に使用。
-- レスポンシブ対応のテスト（デスクトップ・タブレット・モバイル）。
-- API エンドポイントの直接テスト（request fixture 使用）。
+### E2E Guidelines (Playwright)
+- Only critical scenarios (critical paths).
+- Minimize `data-testid` dependency, use accessibility selectors whenever possible.
+- Prioritize `getByRole`, `getByText`, `getByLabel`.
+- Test responsive compatibility (desktop, tablet, mobile).
+- Direct testing of API endpoints (using request fixture).
 
-### 実行チェック
-- 追加後は `pnpm lint` と `pnpm test` が通ること。
-- UI 変更時は `pnpm e2e` で E2E テストも実行。
-- CI 導入時はキャッシュと並列性を考慮し安定実行を優先。
+### Execution Verification
+- After addition, ensure `pnpm lint` and `pnpm test` pass.
+- For UI changes, also run `pnpm e2e` for E2E tests.
+- When introducing CI, prioritize stable execution considering caching and parallelism.

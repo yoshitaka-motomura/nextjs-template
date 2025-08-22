@@ -1,46 +1,46 @@
 ## Coding Guidelines — myapps-nextjs
 
-この文書は本リポジトリの「実装時の基本指針」をまとめたものです。過度な一般論は避け、実務での判断に役立つ最小限の原則に絞ります。
+This document outlines the "basic implementation guidelines" for this repository. It avoids excessive generalizations and focuses on minimal principles that are useful for practical decision-making.
 
 ### TypeScript
-- **型安全最優先**: `any`/`unknown` の安易な使用禁止。型の穴は狭く閉じる。
-- **公開 API の型を明示**: エクスポート関数/コンポーネントの引数・戻り値を注釈。
-- **Union/Discriminated Union を活用**: `enum` よりユニオン型を優先。判定はタグ付きで。
-- **Nullable を明示**: `undefined`/`null` を許容する場合は型に含める。早期 return でガード。
-- **Promise/async**: `async/await` を基本に。未処理の Promise を放置しない。
-- **ユーティリティ**: 再利用関数は `src/lib/utils.ts` または `src/lib/utils/` に配置。
+- **Type Safety First**: Prohibit casual use of `any`/`unknown`. Keep type holes narrow and closed.
+- **Explicit Types for Public APIs**: Annotate arguments and return values for exported functions/components.
+- **Leverage Union/Discriminated Union**: Prefer union types over `enum`. Use tagged unions for discrimination.
+- **Explicit Nullable**: Include `undefined`/`null` in types when allowed. Use early returns for guards.
+- **Promise/async**: Use `async/await` as default. Don't leave unhandled Promises.
+- **Utilities**: Place reusable functions in `src/lib/utils.ts` or `src/lib/utils/`.
 
-### 命名・構造
-- **命名**: 省略しない。関数は動詞/句、変数は名詞/句。`is/has/can/should` を真偽で統一。
-- **コンポーネント**: `PascalCase`。フックは `use*`。定数は `UPPER_SNAKE_CASE` は必要時のみ。
-- **インポート順**: 外部 → エイリアス(`@/*`) → 相対。型は `import type`。
-- **早期 return**: ネストを浅く。ガード句で分岐を減らす。
+### Naming & Structure
+- **Naming**: No abbreviations. Functions use verbs/phrases, variables use nouns/phrases. Unify `is/has/can/should` for boolean values.
+- **Components**: `PascalCase`. Hooks use `use*`. Constants use `UPPER_SNAKE_CASE` only when necessary.
+- **Import Order**: External → Aliases (`@/*`) → Relative. Types use `import type`.
+- **Early Return**: Keep nesting shallow. Reduce branching with guard clauses.
 
-### React / Next.js（App Router）
-- **サーバー優先**: 既定はサーバーコンポーネント。クライアントが必要な場合のみ `"use client"`。
-- **Props 設計**: 明示型。複雑な Props は分割/オブジェクト化。デフォルト値で分岐削減。
-- **状態最小化**: 派生可能な状態は持たない。副作用は `useEffect` に集約し依存配列を正確に。
-- **キー/リスト**: 安定キー必須。配列 index は最後の手段。
-- **アクセシビリティ**: `aria-*`、ラベル関連属性、フォーカス管理を徹底。
-- **ルーティング**: API は `src/app/api/**/route.ts` に配置。`NextResponse` を用い、明示ヘッダと適切なステータス。
-- **フェッチ/キャッシュ**: 方針を明記（`{ cache: 'no-store' }` or `{ next: { revalidate } }`）。
+### React / Next.js (App Router)
+- **Server First**: Default to server components. Use `"use client"` only when client-side is necessary.
+- **Props Design**: Explicit types. Split/complexify complex Props. Reduce branching with default values.
+- **State Minimization**: Don't hold derived state. Consolidate side effects in `useEffect` with accurate dependency arrays.
+- **Keys/Lists**: Stable keys required. Array index is last resort.
+- **Accessibility**: Thorough implementation of `aria-*`, label-related attributes, and focus management.
+- **Routing**: Place APIs in `src/app/api/**/route.ts`. Use `NextResponse` with explicit headers and appropriate status codes.
+- **Fetch/Cache**: Document strategy (`{ cache: 'no-store' }` or `{ next: { revalidate } }`).
 
-### UI（Tailwind v4 / shadcn/ui）
-- **ユーティリティ優先**: まず Tailwind。重複するカスタム CSS を増やさない。
-- **クラス結合**: `clsx` + `tailwind-merge` を使用。文字列連結は避ける。
-- **任意値は節度**: デザインスケール優先。必要な任意値は変数化。
-- **コンポーネント**: 共通 UI は `src/components/ui/*`。追加は `pnpm dlx shadcn add <component>`。
-- **アイコン**: `react-icons` を使用（例: `import { FaGithub } from 'react-icons/fa'`）。
+### UI (Tailwind v4 / shadcn/ui)
+- **Utility First**: Start with Tailwind. Don't increase duplicate custom CSS.
+- **Class Combination**: Use `clsx` + `tailwind-merge`. Avoid string concatenation.
+- **Arbitrary Values with Restraint**: Prioritize design scale. Variable-ize necessary arbitrary values.
+- **Components**: Common UI goes in `src/components/ui/*`. Add with `pnpm dlx shadcn add <component>`.
+- **Icons**: Use `react-icons` (e.g., `import { FaGithub } from 'react-icons/fa'`).
 
-### エラーハンドリング / ロギング
-- **ガードとフォールバック**: ユーザー入力/外部 I/O はガードし、ユーザーに分かる失敗モードを提供。
-- **例外**: 本当に例外的なケースでのみ `throw`。回復可能なら明示的に戻り値で表す。
+### Error Handling / Logging
+- **Guards and Fallbacks**: Guard user input/external I/O and provide user-understandable failure modes.
+- **Exceptions**: Only `throw` in truly exceptional cases. Use explicit return values for recoverable situations.
 
-### フォーマット / Lint / テスト
-- **フォーマット**: Prettier 準拠（`pnpm format`）。
-- **Lint**: ESLint v9 フラット設定を遵守（`pnpm lint`）。
-- **テスト**: Jest（`jsdom` + `babel-jest`）。DOM は Testing Library 流儀で操作/検証。
+### Format / Lint / Test
+- **Format**: Follow Prettier (`pnpm format`).
+- **Lint**: Comply with ESLint v9 flat config (`pnpm lint`).
+- **Testing**: Jest (`jsdom` + `babel-jest`). Manipulate/verify DOM using Testing Library patterns.
 
-### Git / コミット
-- **Conventional Commits**: `feat/fix/chore/refactor/docs/test`。メッセージは Why を 1-2 文。
-- **粒度**: 1 コミット 1 意図。自動生成ファイルは極力含めない。
+### Git / Commits
+- **Conventional Commits**: `feat/fix/chore/refactor/docs/test`. Messages explain Why in 1-2 sentences.
+- **Granularity**: One commit, one intention. Minimize inclusion of auto-generated files.
