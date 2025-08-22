@@ -1,4 +1,4 @@
-## myapps-nextjs
+## {project-name}
 
 Next.js 15 (App Router) + React 19 + TypeScript + Tailwind v4 プロジェクト。
 
@@ -131,3 +131,17 @@ pnpm format:check  # Prettier チェック
 ### ヘルスチェック
 
 `GET /api/health` で `{ status: "ok", timestamp: ISOString }` を返します。キャッシュは無効化。
+
+
+---
+
+### AI Instructions Documents
+- [Claude](CLAUDE.md)
+  - [Claude.md](CLAUDE.md)
+- Cursor (.cursor/rules/)
+  - [coding.mdc](./.cursor/rules/coding.mdc)
+  - [editor.mdc](./.cursor/rules/editor.mdc)
+  - [tests.mdc](./.cursor/rules/tests.mdc)
+  - [project.mdc](./.cursor/rules/project.mdc)
+- Github Copilot
+  - [copilot-instructions.md](./.github/copilot-instructions.md)
