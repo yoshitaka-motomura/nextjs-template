@@ -1,4 +1,8 @@
-## Testing Rules (Cursor) — myapps-nextjs
+---
+alwaysApply: true
+---
+
+## Testing Rules (Cursor)
 
 This document outlines the testing policy and recommended configuration for this project. If not yet introduced, please add with minimal dependencies after documenting the reason.
 

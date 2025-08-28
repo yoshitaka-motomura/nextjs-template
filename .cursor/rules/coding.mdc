@@ -1,4 +1,7 @@
-## Coding Guidelines — myapps-nextjs
+---
+alwaysApply: true
+---
+## Coding Guidelines
 
 This document outlines the "basic implementation guidelines" for this repository. It avoids excessive generalizations and focuses on minimal principles that are useful for practical decision-making.
 
@@ -19,6 +22,7 @@ This document outlines the "basic implementation guidelines" for this repository
 ### React / Next.js (App Router)
 - **Server First**: Default to server components. Use `"use client"` only when client-side is necessary.
 - **Props Design**: Explicit types. Split/complexify complex Props. Reduce branching with default values.
+- **State Management**: Use Zustand for client-side state. Keep stores lightweight and focused on specific domains.
 - **State Minimization**: Don't hold derived state. Consolidate side effects in `useEffect` with accurate dependency arrays.
 - **Keys/Lists**: Stable keys required. Array index is last resort.
 - **Accessibility**: Thorough implementation of `aria-*`, label-related attributes, and focus management.

@@ -1,4 +1,7 @@
-## Editor Rules (Cursor) — myapps-nextjs
+---
+alwaysApply: true
+---
+## Editor Rules (Cursor)
 
 This file contains editing guidelines for Cursor. Please respect existing design and style, and do not make unrelated changes.
 
