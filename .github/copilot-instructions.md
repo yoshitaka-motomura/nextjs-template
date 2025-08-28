@@ -257,7 +257,7 @@ export async function GET() {
 ## When Adding New Features
 
 1. **Follow existing patterns** in the codebase
-2. **Use appropriate testing** (unit tests for utilities, E2E for user flows)
+2. **Use appropriate testing** (unit tests for utilities)
 3. **Update documentation** if necessary
 4. **Run linting and tests** before committing
 5. **Consider performance implications** of your changes
@@ -268,7 +268,7 @@ export async function GET() {
 - **Prisma Client**: Run `pnpm prisma generate` after schema changes
 - **Type Errors**: Check TypeScript strict mode compliance
 - **Build Issues**: Verify all dependencies are installed
-- **Testing Issues**: Ensure Jest and Playwright configurations are correct
+- **Testing Issues**: Ensure Jest configuration is correct
 
 ### Getting Help
 - Check existing code patterns in the project

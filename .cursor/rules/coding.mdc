@@ -137,12 +137,11 @@ export const useCounterStore = create<CounterState>()(
 - **Hooks**: Use `useTranslations` to get translation functions
 - **Testing**: Use `withIntl` helper function for tests
 
-## Testing Strategy
+## テスト戦略
 
 - **Unit/Component**: Jest + Testing Library (React)
-- **E2E**: Playwright (already introduced)
-- **Placement Conventions**: Unit tests in `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`, E2E in `e2e/**.spec.ts`
-- **Testing Policy**: Minimal mocking, stability, reduce implementation coupling, verify public APIs/behavior
+- **Placement Conventions**: ユニットは`src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
+- **Testing Policy**: 最小限のモック、安定性、実装結合の削減、公開API/動作の検証
 
 - **Conventional Commits**: `feat/fix/chore/refactor/docs/test`. Messages explain Why in 1-2 sentences.
 - **Granularity**: One commit, one intention. Minimize inclusion of auto-generated files.

@@ -2,31 +2,26 @@
 alwaysApply: true
 ---
 
+
 # Testing Rules (Cursor)
 
 This document outlines the testing policy and recommended configuration for this project. If not yet introduced, please add with minimal dependencies after documenting the reason.
 
 ## Recommended Stack
 - Unit/Component: Jest + Testing Library (React)
-- E2E: Playwright (already introduced)
 
 Scripts in `package.json`:
-- `test:unit`: jest execution
+- `test`: jest execution
 - `test:watch`: jest watch execution
-- `e2e`: playwright test execution
-- `e2e:ui`: playwright UI mode
-- `e2e:headed`: playwright browser display mode
 
 ## Placement Conventions
 - Unit: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
-- E2E: `e2e/**.spec.ts`
 
 ## Testing Policy
 - **Minimal Mocking**: Mock networks with MSW etc. at boundary units.
 - **Stability**: Prevent flakiness (explicit waiting/timing).
 - **Reduce Implementation Coupling**: Verify public APIs/behavior, not internal implementation.
 - **Server**: Verify inputs/outputs and side effects for route handlers/server actions.
-- **E2E**: Test critical user workflows and API endpoints.
 
 ## next-intl Simple Mock Example
 ```ts
@@ -44,16 +39,8 @@ export function withIntl(children: ReactNode, locale: string = 'en', messages: R
 - Get elements using ARIA roles/labels.
 - Minimize snapshots.
 
-## E2E Guidelines (Playwright)
-- Only critical scenarios (critical paths).
-- Minimize `data-testid` dependency, use accessibility selectors whenever possible.
-- Prioritize `getByRole`, `getByText`, `getByLabel`.
-- Test responsive compatibility (desktop, tablet, mobile).
-- Direct testing of API endpoints (using request fixture).
-
 ## Execution Verification
 - After addition, ensure `pnpm lint` and `pnpm test:unit` pass.
-- For UI changes, also run `pnpm e2e` for E2E tests.
 - When introducing CI, prioritize stable execution considering caching and parallelism.
 
 ## Current Testing Configuration
@@ -84,15 +71,9 @@ export function withIntl(children: ReactNode, locale: string = 'en', messages: R
 }
 ```
 
-### Playwright Configuration
-- **Browsers**: Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari
-- **Test Directory**: `e2e/`
-- **Configuration**: `playwright.config.ts`
-
 ### Testing Dependencies
 - **Jest**: ^30.0.5
 - **Testing Library**: @testing-library/jest-dom ^6.8.0
-- **Playwright**: @playwright/test ^1.55.0
 - **Babel**: babel-jest ^30.0.5
 
 ## Test File Examples
@@ -124,45 +105,28 @@ describe('Button', () => {
 })
 ```
 
-### E2E Test Example
-```typescript
-// e2e/home.spec.ts
-import { test, expect } from '@playwright/test'
-
-test('home page loads correctly', async ({ page }) => {
-  await page.goto('/')
-  await expect(page).toHaveTitle(/Create Next App/)
-})
-```
-
 - For UI changes, also run `pnpm e2e` for E2E tests.
 - When introducing CI, prioritize stable execution considering caching and parallelism.
----
+
 # Testing Rules (Cursor)
 
 This document outlines the testing policy and recommended configuration for this project. If not yet introduced, please add with minimal dependencies after documenting the reason.
 
 ## Recommended Stack
 - Unit/Component: Jest + Testing Library (React)
-- E2E: Playwright (already introduced)
 
 Scripts in `package.json`:
-- `test:unit`: jest execution
+- `test`: jest execution
 - `test:watch`: jest watch execution
-- `e2e`: playwright test execution
-- `e2e:ui`: playwright UI mode
-- `e2e:headed`: playwright browser display mode
 
 ## Placement Conventions
 - Unit: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
-- E2E: `e2e/**.spec.ts`
 
 ## Testing Policy
 - **Minimal Mocking**: Mock networks with MSW etc. at boundary units.
 - **Stability**: Prevent flakiness (explicit waiting/timing).
 - **Reduce Implementation Coupling**: Verify public APIs/behavior, not internal implementation.
 - **Server**: Verify inputs/outputs and side effects for route handlers/server actions.
-- **E2E**: Test critical user workflows and API endpoints.
 
 ## next-intl Simple Mock Example
 ```ts
@@ -180,16 +144,8 @@ export function withIntl(children: ReactNode, locale: string = 'en', messages: R
 - Get elements using ARIA roles/labels.
 - Minimize snapshots.
 
-## E2E Guidelines (Playwright)
-- Only critical scenarios (critical paths).
-- Minimize `data-testid` dependency, use accessibility selectors whenever possible.
-- Prioritize `getByRole`, `getByText`, `getByLabel`.
-- Test responsive compatibility (desktop, tablet, mobile).
-- Direct testing of API endpoints (using request fixture).
-
 ## Execution Verification
 - After addition, ensure `pnpm lint` and `pnpm test:unit` pass.
-- For UI changes, also run `pnpm e2e` for E2E tests.
 - When introducing CI, prioritize stable execution considering caching and parallelism.
 
 ## Current Testing Configuration
@@ -220,15 +176,9 @@ export function withIntl(children: ReactNode, locale: string = 'en', messages: R
 }
 ```
 
-### Playwright Configuration
-- **Browsers**: Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari
-- **Test Directory**: `e2e/`
-- **Configuration**: `playwright.config.ts`
-
 ### Testing Dependencies
 - **Jest**: ^30.0.5
 - **Testing Library**: @testing-library/jest-dom ^6.8.0
-- **Playwright**: @playwright/test ^1.55.0
 - **Babel**: babel-jest ^30.0.5
 
 ## Test File Examples
@@ -257,17 +207,6 @@ describe('Button', () => {
     render(<Button>Click me</Button>)
     expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument()
   })
-})
-```
-
-### E2E Test Example
-```typescript
-// e2e/home.spec.ts
-import { test, expect } from '@playwright/test'
-
-test('home page loads correctly', async ({ page }) => {
-  await page.goto('/')
-  await expect(page).toHaveTitle(/Create Next App/)
 })
 ```
 

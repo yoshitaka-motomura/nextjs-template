@@ -38,7 +38,6 @@ This document provides instructions for using Claude with a Next.js 15.5.0 + Rea
 - **ESLint v9**: Flat configuration, code quality management
 - **Prettier**: Code formatting consistency
 - **Jest**: Unit testing, Testing Library
-- **Playwright**: E2E testing, multi-browser support
 
 ## Development Guidelines
 
@@ -133,11 +132,6 @@ export const useStore = create((set) => ({
 - **Testing Library**: DOM manipulation and user interactions
 - **Coverage**: Critical business logic coverage
 
-### E2E Testing
-- **Playwright**: Browser testing
-- **Critical Paths**: Important user workflows
-- **Cross-browser**: Chrome, Firefox, Safari, Mobile
-
 ## Performance Optimization
 
 ### Next.js 15.5.0
@@ -196,7 +190,6 @@ export const useStore = create((set) => ({
 - **React DevTools**: Component state inspection
 - **Next.js Analytics**: Performance metrics
 - **Prisma Studio**: Database visualization
-- **Playwright Inspector**: E2E test debugging
 
 ## References
 

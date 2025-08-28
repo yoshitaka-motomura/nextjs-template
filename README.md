@@ -13,7 +13,7 @@ Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query 
 - **Data Fetching**: React Query (TanStack Query)
 - **UI Components**: shadcn/ui + Radix UI
 - **Form Handling**: React Hook Form + Zod
-- **Testing**: Jest + Testing Library + Playwright
+- **Testing**: Jest + Testing Library
 - **Development**: Turbopack + ESLint v9 + Prettier
 
 ## 主な機能
@@ -27,7 +27,7 @@ Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query 
 - ✅ Zustand状態管理
 - ✅ shadcn/uiコンポーネント
 - ✅ フォームバリデーション（Zod）
-- ✅ テスト環境（Jest + Playwright）
+- ✅ テスト環境（Jest + Testing Library）
 - ✅ ESLint v9 + Prettier
 - ✅ 国際化対応準備
 
@@ -109,9 +109,6 @@ pnpm format:check     # Prettierチェック
 # テスト
 pnpm test:unit        # ユニットテスト実行
 pnpm test:watch       # テストウォッチモード
-pnpm e2e              # E2Eテスト実行
-pnpm e2e:ui           # E2EテストUIモード
-pnpm e2e:headed       # E2Eテスト（ブラウザ表示）
 
 # データベース
 pnpm prisma generate  # Prismaクライアント生成
