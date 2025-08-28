@@ -7,6 +7,7 @@ This document provides instructions for GitHub Copilot to understand the project
 This is a **Next.js 15.5.0** template project built with modern technologies and best practices.
 
 ### Technology Stack
+
 - **Framework**: Next.js 15.5.0 (App Router + Turbopack)
 - **Runtime**: React 19.1.0
 - **Language**: TypeScript 5 (strict mode)
@@ -54,29 +55,34 @@ prisma/
 ## Coding Standards
 
 ### TypeScript
+
 - **Strict Mode**: Always enabled
 - **Type Safety**: Prohibit `any`/`unknown`, use explicit types
 - **Imports**: Use `import type` for type-only imports
 - **Path Aliases**: Use `@/*` for `src/*` paths
 
 ### React / Next.js
+
 - **Server First**: Default to Server Components, use `"use client"` only when necessary
 - **App Router**: Use modern App Router patterns
 - **Server Actions**: Prefer server actions over API routes when possible
 - **Metadata**: Use `metadata` and `generateMetadata` for SEO
 
 ### State Management
+
 - **Client State**: Use Zustand for client-side state
 - **Server State**: Use React Query (TanStack Query) for server state
 - **Store Organization**: Place stores in `src/lib/store/` organized by domain
 
 ### Database (Prisma)
+
 - **Client**: Use singleton pattern in `src/lib/prisma.ts`
 - **Data Access**: Place functions in `src/lib/db/` directory
 - **Error Handling**: Always wrap operations in try-catch
 - **Type Safety**: Use generated Prisma types
 
 ### UI / Styling
+
 - **Tailwind CSS v4**: Utility-first approach
 - **shadcn/ui**: Use existing components, add new ones with `pnpm dlx shadcn add`
 - **Icons**: Use `react-icons` (not `lucide-react`)
@@ -85,11 +91,13 @@ prisma/
 ## File Naming & Organization
 
 ### Components
+
 - **React Components**: PascalCase (e.g., `Button.tsx`, `UserProfile.tsx`)
 - **Hooks**: `use` prefix (e.g., `useCounter.ts`, `useAuth.ts`)
 - **Utilities**: camelCase (e.g., `formatDate.ts`, `validation.ts`)
 
 ### Directories
+
 - **Pages**: `src/app/**/page.tsx`
 - **Layouts**: `src/app/**/layout.tsx`
 - **API Routes**: `src/app/api/**/route.ts`
@@ -100,6 +108,7 @@ prisma/
 ## Development Patterns
 
 ### Server Components
+
 ```typescript
 // Default pattern - Server Component
 export default async function Page() {
@@ -109,6 +118,7 @@ export default async function Page() {
 ```
 
 ### Client Components
+
 ```typescript
 'use client'
 // Only when client-side interactivity is needed
@@ -119,6 +129,7 @@ export function InteractiveComponent() {
 ```
 
 ### Database Functions
+
 ```typescript
 // src/lib/db/example.ts
 import { prisma } from '@/lib/prisma'
@@ -134,6 +145,7 @@ export async function getData(): Promise<Data[]> {
 ```
 
 ### Zustand Store
+
 ```typescript
 // src/lib/store/example.ts
 import { create } from 'zustand'
@@ -147,19 +159,21 @@ interface ExampleState {
 export const useExampleStore = create<ExampleState>()(
   devtools((set) => ({
     count: 0,
-    increment: () => set((state) => ({ count: state.count + 1 }))
-  }))
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  })),
 )
 ```
 
 ## Testing
 
 ### Unit Tests
+
 - **Framework**: Jest + Testing Library
 - **Location**: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
 - **Script**: `pnpm test:unit`
 
 ### E2E Tests
+
 - **Framework**: Playwright
 - **Location**: `e2e/**.spec.ts`
 - **Script**: `pnpm e2e`
@@ -192,18 +206,21 @@ pnpm prisma studio    # Open Prisma Studio
 ## Best Practices
 
 ### Performance
+
 - **Server Components**: Reduce client-side JavaScript
 - **Image Optimization**: Use `next/image` with proper sizing
 - **Code Splitting**: Leverage Next.js automatic code splitting
 - **Caching**: Use React Query for intelligent data caching
 
 ### Security
+
 - **Input Validation**: Use Zod schemas for all user inputs
 - **SQL Injection**: Prisma ORM prevents SQL injection
 - **XSS Protection**: React's built-in XSS protection
 - **Environment Variables**: Store sensitive data in `.env.local`
 
 ### Accessibility
+
 - **Semantic HTML**: Use proper HTML elements
 - **ARIA Attributes**: Implement appropriate ARIA labels and roles
 - **Keyboard Navigation**: Ensure keyboard accessibility
@@ -212,6 +229,7 @@ pnpm prisma studio    # Open Prisma Studio
 ## Common Patterns
 
 ### Form Handling
+
 ```typescript
 'use client'
 import { useForm } from 'react-hook-form'
@@ -227,7 +245,7 @@ export function Form() {
   const form = useForm({
     resolver: zodResolver(schema)
   })
-  
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       {/* Form fields */}
@@ -237,6 +255,7 @@ export function Form() {
 ```
 
 ### API Routes
+
 ```typescript
 // src/app/api/example/route.ts
 import { NextResponse } from 'next/server'
@@ -246,10 +265,7 @@ export async function GET() {
     const data = await fetchData()
     return NextResponse.json(data)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 ```
@@ -265,12 +281,14 @@ export async function GET() {
 ## Troubleshooting
 
 ### Common Issues
+
 - **Prisma Client**: Run `pnpm prisma generate` after schema changes
 - **Type Errors**: Check TypeScript strict mode compliance
 - **Build Issues**: Verify all dependencies are installed
 - **Testing Issues**: Ensure Jest configuration is correct
 
 ### Getting Help
+
 - Check existing code patterns in the project
 - Review the coding guidelines in `.cursor/rules/`
 - Run `pnpm lint` to identify code quality issues

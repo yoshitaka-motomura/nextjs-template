@@ -35,25 +35,25 @@ Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query 
 
 ### 本番依存関係（dependencies）
 
-| パッケージ | バージョン | 説明 | 用途 |
-|-----------|-----------|------|------|
-| next | 15.5.0 | React フレームワーク（App Router） | メインフレームワーク |
-| react | 19.1.0 | React ライブラリ | UI ライブラリ |
-| react-dom | 19.1.0 | React DOM レンダリング | ブラウザレンダリング |
-| @prisma/client | ^6.15.0 | Prisma ORM クライアント | データベース操作 |
-| @tanstack/react-query | ^5.85.5 | React Query（TanStack Query） | サーバー状態管理 |
-| @tanstack/react-query-devtools | ^5.85.5 | React Query 開発ツール | 開発時のデバッグ |
-| zustand | ^5.0.8 | 状態管理ライブラリ | クライアント状態管理 |
-| @radix-ui/react-label | ^2.1.7 | アクセシブルなラベルコンポーネント | UI コンポーネント |
-| @radix-ui/react-slot | ^1.2.3 | コンポーネント合成のためのスロット | UI コンポーネント |
-| class-variance-authority | ^0.7.1 | バリアントベースのクラス管理 | UI コンポーネント |
-| clsx | ^2.1.1 | 条件付きクラス名ユーティリティ | CSS クラス管理 |
-| tailwind-merge | ^3.3.1 | Tailwind CSS クラスマージャー | CSS クラス最適化 |
-| react-hook-form | ^7.62.0 | フォーム管理ライブラリ | フォーム処理 |
-| zod | ^4.1.4 | スキーマバリデーション | データ検証 |
-| dayjs | ^1.11.13 | 軽量な日時ライブラリ | 日時処理 |
-| react-icons | ^5.5.0 | React用アイコンライブラリ | アイコン表示 |
-| hono | ^4.9.4 | 軽量Webフレームワーク | API ルート |
+| パッケージ                     | バージョン | 説明                               | 用途                 |
+| ------------------------------ | ---------- | ---------------------------------- | -------------------- |
+| next                           | 15.5.0     | React フレームワーク（App Router） | メインフレームワーク |
+| react                          | 19.1.0     | React ライブラリ                   | UI ライブラリ        |
+| react-dom                      | 19.1.0     | React DOM レンダリング             | ブラウザレンダリング |
+| @prisma/client                 | ^6.15.0    | Prisma ORM クライアント            | データベース操作     |
+| @tanstack/react-query          | ^5.85.5    | React Query（TanStack Query）      | サーバー状態管理     |
+| @tanstack/react-query-devtools | ^5.85.5    | React Query 開発ツール             | 開発時のデバッグ     |
+| zustand                        | ^5.0.8     | 状態管理ライブラリ                 | クライアント状態管理 |
+| @radix-ui/react-label          | ^2.1.7     | アクセシブルなラベルコンポーネント | UI コンポーネント    |
+| @radix-ui/react-slot           | ^1.2.3     | コンポーネント合成のためのスロット | UI コンポーネント    |
+| class-variance-authority       | ^0.7.1     | バリアントベースのクラス管理       | UI コンポーネント    |
+| clsx                           | ^2.1.1     | 条件付きクラス名ユーティリティ     | CSS クラス管理       |
+| tailwind-merge                 | ^3.3.1     | Tailwind CSS クラスマージャー      | CSS クラス最適化     |
+| react-hook-form                | ^7.62.0    | フォーム管理ライブラリ             | フォーム処理         |
+| zod                            | ^4.1.4     | スキーマバリデーション             | データ検証           |
+| dayjs                          | ^1.11.13   | 軽量な日時ライブラリ               | 日時処理             |
+| react-icons                    | ^5.5.0     | React用アイコンライブラリ          | アイコン表示         |
+| hono                           | ^4.9.4     | 軽量Webフレームワーク              | API ルート           |
 
 ## セットアップ
 
