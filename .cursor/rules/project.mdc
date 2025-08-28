@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 
 ## Cursor Project Rules
 
@@ -198,6 +202,9 @@ If the project structure changes, update the documents under the following direc
 
 #### GitHub Copilot Instructions
 - `./.github/copilot-instructions.md` - GitHub Copilot instructions
+
+#### CLAUDE CLI
+- `CLAUDE.md` - CLAUDE CLI rules
 
 #### CLAUDE CLI
 - `CLAUDE.md` - CLAUDE CLI rules

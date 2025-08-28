@@ -1,374 +1,281 @@
-# GitHub Copilot Instructions for myapps-nextjs
+# GitHub Copilot Instructions
 
-このファイルは GitHub Copilot に対するプロジェクト固有の指示です。以下のルールとガイドラインを厳守してください。
+This document provides instructions for GitHub Copilot to understand the project structure, coding standards, and best practices.
 
-## 🏗️ Project Overview
+## Project Overview
 
-- **Framework**: Next.js 15.5 (App Router)
-- **React**: 19.1
-- **TypeScript**: strict mode
-- **Database**: Prisma ORM with MySQL
-- **Styling**: Tailwind CSS v4 + PostCSS
-- **State Management**: Zustand (lightweight client-side state management)
-- **Server State**: TanStack Query (data fetching & caching)
-- **Authentication**: WorkOS AuthKit (enterprise-grade SSO)
-- **API Framework**: Hono (lightweight web framework for API Routes)
-- **Infrastructure**: AWS CDK v2 (Infrastructure as Code)
-- **Storage**: AWS S3 (file uploads and storage)
-- **Package Manager**: pnpm
-- **Path Alias**: `@/*` → `src/*`
-- **UI**: shadcn/ui (managed via `components.json`)
-- **Icons**: react-icons (do NOT use lucide-react)
-- **Testing**: Jest with jsdom
+This is a **Next.js 15.5.0** template project built with modern technologies and best practices.
 
-## 📁 Directory Structure
+### Technology Stack
+- **Framework**: Next.js 15.5.0 (App Router + Turbopack)
+- **Runtime**: React 19.1.0
+- **Language**: TypeScript 5 (strict mode)
+- **Styling**: Tailwind CSS v4
+- **Database**: Prisma ORM + MySQL
+- **State Management**: Zustand
+- **Data Fetching**: React Query (TanStack Query)
+- **UI Components**: shadcn/ui + Radix UI
+- **Form Handling**: React Hook Form + Zod
+- **Testing**: Jest + Testing Library + Playwright
+- **Development**: ESLint v9 + Prettier
+
+## Project Structure
 
 ```
 src/
-├── app/                    # App Router pages/layouts/route handlers
-│   ├── (auth)/            # Authentication protected group
-│   │   ├── account/       # Account management (protected)
-│   │   └── notes/         # Notes management (protected)
-│   │       ├── _components/ # Page-specific components
-│   │       └── _actions/    # Page-specific Server Actions
-│   ├── [route]/           # Example page route
-│   │   ├── _components/   # Page-specific components (underscore prevents routing)
-│   │   ├── _actions/      # Page-specific Server Actions (underscore prevents routing)
-│   │   ├── page.tsx       # Page component
-│   │   └── layout.tsx     # Route layout (optional)
-│   ├── api/               # API Routes (Hono integration)
-│   │   └── [[...route]]/  # Dynamic routing
-│   ├── callback/          # WorkOS authentication callback
-│   ├── login/             # Login route
-│   ├── signup/            # Signup route
-│   ├── globals.css        # Global styles (Tailwind v4)
-│   ├── layout.tsx         # Root layout (Geist fonts, WorkOS AuthKit provider)
+├── app/                    # Next.js App Router
+│   ├── api/               # API Routes
+│   ├── example/           # Example pages
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Home page
-├── components/             # Reusable components
-│   ├── auth/              # Authentication components
-│   │   └── AuthButton.tsx # Auth button with WorkOS
-│   ├── ui/                # shadcn/ui components
-│   ├── icons/             # Icon components
-│   └── layout/            # Layout components
-├── lib/                    # Utilities and business logic
-│   ├── api/               # API endpoints (Hono)
-│   │   └── upload.ts      # File upload API
-│   ├── utils.ts           # Utility functions
-│   ├── prisma.ts          # Prisma client configuration
-│   ├── workos.ts          # WorkOS configuration
-│   ├── actions/           # Shared Server Actions (cross-page usage)
-│   ├── hooks/             # Custom hooks
-│   └── types/             # Type definitions
-├── middleware.ts           # Next.js middleware (authentication protection)
-├── __tests__/              # Unit test files
-└── styles/                 # Additional CSS files
-prisma/                     # Database configuration
-├── schema.prisma           # Database schema and models
-└── seed.ts                 # Database seeding script
-e2e/                        # E2E test files (Playwright)
-├── home.spec.ts           # Home page E2E tests
-├── api.spec.ts            # API endpoint E2E tests
-└── README.md              # E2E testing guide
-infra/                      # AWS CDK infrastructure configuration
-├── lib/                   # CDK stack definitions
-│   └── infra-stack.ts     # Main infrastructure stack (S3, etc.)
-├── bin/                   # CDK app entry point
-├── test/                  # Infrastructure tests
-├── package.json           # CDK dependencies and scripts
-└── cdk.json               # CDK configuration
+├── components/            # React components
+│   ├── icons/            # Icon components
+│   ├── layout/           # Layout components
+│   ├── providers/        # Provider components
+│   └── ui/               # shadcn/ui components
+├── lib/                   # Utilities & libraries
+│   ├── api/              # API related
+│   ├── db/               # Database related
+│   ├── hooks/            # Custom hooks
+│   ├── prisma.ts         # Prisma client
+│   ├── query-client.ts   # React Query client
+│   ├── store/            # Zustand stores
+│   ├── types/            # Type definitions
+│   ├── utils/            # Utility functions
+│   └── validations/      # Zod validations
+└── messages/              # Internationalization messages
+
+prisma/
+├── schema.prisma          # Prisma schema
+└── migrations/            # Database migrations
 ```
 
-### Page-Specific Organization Rules
+## Coding Standards
 
-**Components:**
-- **Page-specific**: `src/app/[route]/_components/ComponentName.tsx` (PascalCase)
-- **Global/shared**: `src/components/ui/` (shadcn/ui components)
+### TypeScript
+- **Strict Mode**: Always enabled
+- **Type Safety**: Prohibit `any`/`unknown`, use explicit types
+- **Imports**: Use `import type` for type-only imports
+- **Path Aliases**: Use `@/*` for `src/*` paths
 
-**Server Actions:**
-- **Page-specific**: `src/app/[route]/_actions/action-name.ts` (kebab-case, one function per file)
-- **Global/shared**: `src/lib/actions/` (for cross-page usage)
+### React / Next.js
+- **Server First**: Default to Server Components, use `"use client"` only when necessary
+- **App Router**: Use modern App Router patterns
+- **Server Actions**: Prefer server actions over API routes when possible
+- **Metadata**: Use `metadata` and `generateMetadata` for SEO
 
-**Example structure:**
-```
-src/app/users/
-├── _components/
-│   ├── UserCard.tsx
-│   ├── UserForm.tsx
-│   └── UserList.tsx
-├── _actions/
-│   ├── create-user.ts
-│   ├── update-user.ts
-│   └── delete-user.ts
-├── page.tsx
-└── layout.tsx
-```
+### State Management
+- **Client State**: Use Zustand for client-side state
+- **Server State**: Use React Query (TanStack Query) for server state
+- **Store Organization**: Place stores in `src/lib/store/` organized by domain
 
-## 🔐 Authentication & Authorization (WorkOS)
+### Database (Prisma)
+- **Client**: Use singleton pattern in `src/lib/prisma.ts`
+- **Data Access**: Place functions in `src/lib/db/` directory
+- **Error Handling**: Always wrap operations in try-catch
+- **Type Safety**: Use generated Prisma types
 
-### Protected Routes
-- **`app/(auth)` group**: All pages under this group require authentication
-- **Automatic protection**: Middleware automatically redirects unauthenticated users to login
-- **Protected pages**: `/account`, `/notes`
+### UI / Styling
+- **Tailwind CSS v4**: Utility-first approach
+- **shadcn/ui**: Use existing components, add new ones with `pnpm dlx shadcn add`
+- **Icons**: Use `react-icons` (not `lucide-react`)
+- **Accessibility**: Implement proper ARIA attributes and semantic HTML
 
-### Authentication Flow
-1. **User access**: User tries to access protected route
-2. **Middleware check**: `middleware.ts` checks authentication
-3. **Redirect**: Unauthenticated users redirected to login
-4. **WorkOS Auth**: User authenticates via WorkOS AuthKit
-5. **Callback**: User redirected back to `/callback`
-6. **Session**: Session established and cookies set
-7. **Access**: User can now access protected routes
+## File Naming & Organization
 
-### Usage Patterns
+### Components
+- **React Components**: PascalCase (e.g., `Button.tsx`, `UserProfile.tsx`)
+- **Hooks**: `use` prefix (e.g., `useCounter.ts`, `useAuth.ts`)
+- **Utilities**: camelCase (e.g., `formatDate.ts`, `validation.ts`)
 
-**Server Components:**
+### Directories
+- **Pages**: `src/app/**/page.tsx`
+- **Layouts**: `src/app/**/layout.tsx`
+- **API Routes**: `src/app/api/**/route.ts`
+- **Components**: `src/components/**/*.tsx`
+- **Database**: `src/lib/db/**/*.ts`
+- **Types**: `src/lib/types/**/*.ts`
+
+## Development Patterns
+
+### Server Components
 ```typescript
-import { withAuth } from '@workos-inc/authkit-nextjs'
-
-export default async function ProtectedPage() {
-  const { user } = await withAuth({ ensureSignedIn: true })
-  return <div>Welcome, {user.firstName}!</div>
+// Default pattern - Server Component
+export default async function Page() {
+  const data = await fetchData()
+  return <div>{data}</div>
 }
 ```
 
-**Client Components:**
+### Client Components
 ```typescript
-import { useAuth } from '@workos-inc/authkit-nextjs/components'
+'use client'
+// Only when client-side interactivity is needed
+export function InteractiveComponent() {
+  const [state, setState] = useState()
+  return <button onClick={() => setState()}>Click</button>
+}
+```
 
-export default function AuthComponent() {
-  const { user, loading, signOut } = useAuth()
-  
-  if (loading) return <div>Loading...</div>
-  if (!user) return <div>Please sign in</div>
+### Database Functions
+```typescript
+// src/lib/db/example.ts
+import { prisma } from '@/lib/prisma'
+
+export async function getData(): Promise<Data[]> {
+  try {
+    return await prisma.model.findMany()
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+### Zustand Store
+```typescript
+// src/lib/store/example.ts
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+
+interface ExampleState {
+  count: number
+  increment: () => void
+}
+
+export const useExampleStore = create<ExampleState>()(
+  devtools((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 }))
+  }))
+)
+```
+
+## Testing
+
+### Unit Tests
+- **Framework**: Jest + Testing Library
+- **Location**: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
+- **Script**: `pnpm test:unit`
+
+### E2E Tests
+- **Framework**: Playwright
+- **Location**: `e2e/**.spec.ts`
+- **Script**: `pnpm e2e`
+
+## Available Scripts
+
+```bash
+# Development
+pnpm dev              # Start dev server (Turbopack enabled)
+pnpm build            # Build for production
+pnpm start            # Start production server
+
+# Code Quality
+pnpm lint             # Run ESLint
+pnpm format           # Format with Prettier
+pnpm format:check     # Check formatting
+
+# Testing
+pnpm test:unit        # Run unit tests
+pnpm test:watch       # Run tests in watch mode
+pnpm e2e              # Run E2E tests
+pnpm e2e:ui           # Run E2E tests with UI
+
+# Database
+pnpm prisma generate  # Generate Prisma client
+pnpm prisma migrate dev # Run migrations
+pnpm prisma studio    # Open Prisma Studio
+```
+
+## Best Practices
+
+### Performance
+- **Server Components**: Reduce client-side JavaScript
+- **Image Optimization**: Use `next/image` with proper sizing
+- **Code Splitting**: Leverage Next.js automatic code splitting
+- **Caching**: Use React Query for intelligent data caching
+
+### Security
+- **Input Validation**: Use Zod schemas for all user inputs
+- **SQL Injection**: Prisma ORM prevents SQL injection
+- **XSS Protection**: React's built-in XSS protection
+- **Environment Variables**: Store sensitive data in `.env.local`
+
+### Accessibility
+- **Semantic HTML**: Use proper HTML elements
+- **ARIA Attributes**: Implement appropriate ARIA labels and roles
+- **Keyboard Navigation**: Ensure keyboard accessibility
+- **Screen Readers**: Test with screen reader software
+
+## Common Patterns
+
+### Form Handling
+```typescript
+'use client'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email')
+})
+
+export function Form() {
+  const form = useForm({
+    resolver: zodResolver(schema)
+  })
   
   return (
-    <div>
-      <p>Welcome, {user.firstName}!</p>
-      <button onClick={() => signOut()}>Sign Out</button>
-    </div>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields */}
+    </form>
   )
 }
 ```
 
-## 🚀 Common Commands
-
-- **Development**: `pnpm dev`
-- **Build**: `pnpm build`
-- **Production**: `pnpm start`
-- **Lint**: `pnpm lint`
-- **Test**: `pnpm test` / `pnpm test:watch`
-- **E2E Test**: `pnpm e2e` / `pnpm e2e:ui` / `pnpm e2e:headed`
-- **Format**: `pnpm format` / `pnpm format:check`
-- **Database**: `pnpm db:generate` / `pnpm db:push` / `pnpm db:studio` / `pnpm db:seed`
-- **Infrastructure**: `cd infra && npm run deploy` / `npm run diff` / `npm run synth`
-
-## 💻 Coding Guidelines
-
-### TypeScript
-- **Type Safety First**: Avoid `any`/`unknown` usage. Always provide explicit types for public APIs.
-- **Nullable Handling**: Use early returns and guard clauses for undefined/null values.
-- **Utility Types**: Leverage union types and discriminated unions over enums.
-
-### React / Next.js (App Router)
-- **Server Components Default**: Use server components by default. Add `"use client"` only when necessary.
-- **Props Design**: Explicit typing, split complex props into objects, use default values.
-- **State Management**: Use Zustand for client-side state. Keep stores lightweight and focused on specific domains.
-- **State Minimization**: Minimize state, avoid derived state, use `useEffect` for side effects.
-- **Routing**: Place API routes in `src/app/api/**/route.ts`. Use `NextResponse` with explicit headers.
-
-### Server Actions Best Practices
-- **`'use server'` Directive**: Always include at the top of action files
-- **Input Validation**: Validate all form data and parameters
-- **Error Handling**: Use try-catch blocks with proper error responses
-- **Revalidation**: Use `revalidatePath()` or `revalidateTag()` after data mutations
-- **File Organization**: One function per file, named by purpose (e.g., `create-user.ts`)
-- **Single Responsibility**: Each action should focus on one specific task
-
-### Database (Prisma) Best Practices
-- **Import Client**: Always use `import { prisma } from '@/lib/prisma'`
-- **Error Handling**: Wrap database operations in try-catch blocks
-- **Type Safety**: Use Prisma-generated types for type safety
-- **Relations**: Use `include` or `select` for related data
-- **Transactions**: Use `prisma.$transaction()` for multi-table operations
-- **Validation**: Always validate data before database operations
-
-### Authentication (WorkOS) Best Practices
-- **Protected Routes**: Use `app/(auth)` group for authentication-required pages
-- **Server Components**: Use `withAuth` from `@workos-inc/authkit-nextjs`
-- **Client Components**: Use `useAuth` hook for user state management
-- **Middleware**: Authentication is automatically handled by `middleware.ts`
-- **Error Handling**: Proper authentication error responses and redirects
-- **Session Management**: WorkOS handles sessions automatically
-
-### UI (Tailwind v4 / shadcn/ui)
-- **Utility-First**: Use Tailwind utilities before custom CSS.
-- **Class Merging**: Use `clsx` + `tailwind-merge` for conditional classes.
-- **Components**: Use existing `src/components/ui/*` components. Add new ones with `pnpm dlx shadcn add <component>`.
-- **Icons**: Use `react-icons` (e.g., `import { FaGithub } from 'react-icons/fa'`).
-
-### Naming & Structure
-- **Naming**: Use descriptive names, no abbreviations. Functions as verbs, variables as nouns.
-- **Components**: PascalCase for components, `use*` for hooks.
-- **Import Order**: External → Aliases (`@/*`) → Relative. Use `import type` for types.
-
-## 🧪 Testing Guidelines
-
-### Test Structure
-- **Unit Tests**: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
-- **E2E Tests**: `e2e/**/*.spec.ts`
-- **Unit Framework**: Jest with jsdom + babel-jest
-- **E2E Framework**: Playwright with multiple browsers
-- **DOM Testing**: Use Testing Library patterns for unit tests
-
-### Testing Principles
-- **Minimal Mocking**: Mock at boundaries, not implementation details
-- **Stability**: Prevent flaky tests with explicit waiting/timing
-- **API Testing**: Test public APIs and behavior, not internal implementation
-- **E2E Focus**: Test user workflows and critical paths
-- **Semantic Selectors**: Use `getByRole`, `getByText` over CSS selectors
-
-## 🎨 Styling Guidelines
-
-### Tailwind CSS v4
-- **Utility Priority**: Use Tailwind utilities first, minimize custom CSS
-- **Design Scale**: Follow default spacing and color scales
-- **Responsive**: Use utility classes for responsive design
-- **Dark Mode**: Implement with utility classes
-
-## 🗃️ State Management Guidelines
-
-### Zustand Best Practices
-- **Store Organization**: Create stores in `src/lib/stores/` directory
-- **Store Naming**: Use descriptive names like `useUserStore`, `useCartStore`
-- **Type Safety**: Always define TypeScript interfaces for store state
-- **Store Structure**: Keep stores focused on single domains
-- **Actions**: Group related actions together in the same store
-- **Selectors**: Use selectors to avoid unnecessary re-renders
-
-### TanStack Query Best Practices
-- **Query Keys**: Use consistent and descriptive query keys
-- **Error Handling**: Implement proper error boundaries and fallbacks
-- **Caching**: Leverage automatic caching and invalidation
-- **Optimistic Updates**: Use for better user experience
-- **Background Refetching**: Enable for data freshness
-
-### Example Store Structure
+### API Routes
 ```typescript
-// src/lib/stores/user-store.ts
-interface UserState {
-  user: User | null
-  isLoading: boolean
-  login: (credentials: LoginCredentials) => Promise<void>
-  logout: () => void
+// src/app/api/example/route.ts
+import { NextResponse } from 'next/server'
+
+export async function GET() {
+  try {
+    const data = await fetchData()
+    return NextResponse.json(data)
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }
-
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  isLoading: false,
-  login: async (credentials) => {
-    set({ isLoading: true })
-    // ... login logic
-    set({ isLoading: false, user: userData })
-  },
-  logout: () => set({ user: null })
-}))
 ```
 
-### CSS Variables
-- Use CSS custom properties for theme values
-- Maintain semantic meaning in variable names
-- Follow the established color scheme in `globals.css`
+## When Adding New Features
 
-## 🔧 Development Workflow
+1. **Follow existing patterns** in the codebase
+2. **Use appropriate testing** (unit tests for utilities, E2E for user flows)
+3. **Update documentation** if necessary
+4. **Run linting and tests** before committing
+5. **Consider performance implications** of your changes
 
-### Before Making Changes
-1. **Search & Explore**: Use search to understand existing code and dependencies
-2. **Understand Context**: Check related files and understand the current design
-3. **Plan Changes**: Identify minimal changes needed to achieve the goal
+## Troubleshooting
 
-### During Development
-1. **Follow Patterns**: Match existing code style and architecture
-2. **Type Safety**: Ensure TypeScript strict mode compliance
-3. **Linting**: Follow ESLint rules and project conventions
+### Common Issues
+- **Prisma Client**: Run `pnpm prisma generate` after schema changes
+- **Type Errors**: Check TypeScript strict mode compliance
+- **Build Issues**: Verify all dependencies are installed
+- **Testing Issues**: Ensure Jest and Playwright configurations are correct
 
-### After Changes
-1. **Verify**: Run `pnpm lint` and `pnpm test`
-2. **Build Check**: Ensure `pnpm build` succeeds
-3. **Documentation**: Update relevant documentation if needed
-
-## 📝 Git & Commits
-
-### Commit Message Format
-Use Conventional Commits with emojis:
-
-- ✨ **feat**: New features
-- 🐛 **fix**: Bug fixes
-- 📝 **docs**: Documentation changes
-- 🎨 **style**: Code style changes
-- 🔄 **refactor**: Code refactoring
-- 🧪 **test**: Adding or updating tests
-- 🧹 **chore**: Maintenance tasks
-- 🚀 **perf**: Performance improvements
-- 🤖 **ci**: CI/CD changes
-
-### Commit Guidelines
-- **One Purpose**: One commit = one logical change
-- **Clear Message**: Explain what and why in 1-2 sentences
-- **No Sensitive Info**: Avoid API keys, URLs, or environment variables
-
-## 🚫 What NOT to Do
-
-- **Don't** use `lucide-react` (use `react-icons` instead)
-- **Don't** add unnecessary dependencies without clear justification
-- **Don't** break existing TypeScript strict mode compliance
-- **Don't** ignore ESLint warnings
-- **Don't** commit auto-generated files unnecessarily
-- **Don't** make unrelated refactoring changes
-- **Don't** create overly complex Zustand stores - keep them focused and lightweight
-- **Don't** bypass authentication checks in protected routes
-- **Don't** expose WorkOS API keys or sensitive configuration
-
-## ✅ Quality Checklist
-
-Before committing, ensure:
-- [ ] TypeScript compilation passes
-- [ ] ESLint passes (`pnpm lint`)
-- [ ] Unit tests pass (`pnpm test`)
-- [ ] E2E tests pass (`pnpm e2e`) - if UI changes
-- [ ] Build succeeds (`pnpm build`)
-- [ ] Changes follow existing patterns
-- [ ] No sensitive information is included
-- [ ] Commit message follows conventions
-- [ ] Authentication flows work correctly
-- [ ] Protected routes are properly secured
-
-## 🔍 AI Assistance Guidelines
-
-When using Copilot:
-1. **Context Matters**: Provide clear context about what you're trying to achieve
-2. **Iterative**: Start with small suggestions and refine based on feedback
-3. **Project-Aware**: Always consider the existing project structure and patterns
-4. **Quality First**: Prioritize type safety and maintainability over quick solutions
-5. **Security Conscious**: Ensure authentication and authorization are properly implemented
-
-## 🌐 Environment Variables
-
-Required environment variables for WorkOS integration:
-
-```env
-# WorkOS Configuration
-WORKOS_API_KEY=your_workos_api_key_here
-WORKOS_CLIENT_ID=your_workos_client_id_here
-WORKOS_COOKIE_PASSWORD=your_secure_cookie_password_here
-NEXT_PUBLIC_WORKOS_REDIRECT_URI=http://localhost:3000/callback
-
-# Database
-DATABASE_URL="mysql://username:password@localhost:3306/database_name"
-```
+### Getting Help
+- Check existing code patterns in the project
+- Review the coding guidelines in `.cursor/rules/`
+- Run `pnpm lint` to identify code quality issues
+- Use `pnpm test:unit` to verify functionality
 
 ---
 
-**Remember**: This project follows strict TypeScript and React best practices with enterprise-grade authentication via WorkOS. Always prioritize code quality, maintainability, security, and consistency with existing patterns.
-
-### Documentation
-Project documentation should be stored in the docs directory. If any documentation is missing, add or update it accordingly. Keep edits to the project's README.md to a minimum.
+Follow these guidelines to maintain code quality and consistency across the project.
