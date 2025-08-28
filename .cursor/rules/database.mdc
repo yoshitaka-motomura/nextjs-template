@@ -1,0 +1,542 @@
+---
+alwaysApply: true
+---
+
+# Database Guidelines (Prisma)
+
+This document outlines the database usage patterns and best practices for this project using Prisma ORM with MySQL.
+
+## Prisma Setup & Configuration
+
+### Core Configuration
+- **ORM**: Prisma (latest stable version)
+- **Database**: MySQL
+- **Client**: `@/lib/prisma.ts` - Singleton pattern for Next.js
+- **Schema**: `prisma/schema.prisma`
+- **Migrations**: `prisma/migrations/`
+- **Seeding**: `prisma/seed.ts`
+
+#### Environment Variables
+```env
+# .env.local
+DATABASE_URL="mysql://username:password@localhost:3306/database_name"
+```
+
+## Data Access Layer Structure
+
+#### Location & Organization
+- **Data Access Functions**: `src/lib/db/` directory
+- **Naming Convention**: One file per model (e.g., `post.ts`, `user.ts`)
+- **Function Naming**: Descriptive verbs (`getPostsWithAuthor`, `createPost`, `updateUserById`)
+
+#### Required Pattern for Data Access Functions
+```typescript
+import { prisma } from '@/lib/prisma'
+import type { Post as PrismaPost } from '@prisma/client'
+
+export async function getPostsWithAuthor(): Promise<PostWithAuthor[]> {
+  try {
+    return await prisma.post.findMany({
+      include: { author: true },
+      where: { published: true },
+    })
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+### Type Safety Requirements
+
+#### Generated Types Usage
+```typescript
+// Use generated types from Prisma
+import type { Post, User } from '@prisma/client'
+
+// Custom composite types in src/lib/types/database.ts
+export type PostWithAuthor = Post & {
+  author: User
+}
+```
+
+#### Type Annotations
+- **Always annotate return types** for exported functions
+- **Use union types** for conditional includes (e.g., `PostWithAuthor | PrismaPost | null`)
+- **Import with `import type`** when importing types only
+
+### Error Handling Standards
+
+#### Required Pattern
+```typescript
+export async function dataAccessFunction() {
+  try {
+    return await prisma.model.operation()
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+#### Error Handling Rules
+- **Always wrap** Prisma operations in try-catch
+- **Log original error** for debugging
+- **Throw user-friendly error** messages
+- **Don't expose internal database details** to users
+
+### Query Optimization
+
+#### Performance Guidelines
+- **Select only necessary fields** when possible
+- **Use `include` judiciously** - avoid deep nesting
+- **Implement pagination** for large datasets
+- **Add database indexes** for frequent queries
+- **Use transactions** for multi-table operations
+
+#### Example Optimized Query
+```typescript
+// Good: Selective fields and filtering
+export async function getPublishedPostSummaries() {
+  return await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      author: {
+        select: { name: true }
+      }
+    },
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+    take: 10
+  })
+}
+```
+
+### Schema Design Principles
+
+#### Naming Conventions
+- **Models**: `PascalCase` (e.g., `User`, `Post`)
+- **Fields**: `camelCase` (e.g., `createdAt`, `authorId`)
+- **Relations**: Descriptive names (e.g., `author`, `posts`)
+
+#### Required Fields
+- **IDs**: Use `cuid()` for primary keys
+- **Timestamps**: Always include `createdAt` and `updatedAt`
+- **Relations**: Proper foreign key constraints
+
+#### Example Schema Pattern
+```prisma
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("posts")
+}
+```
+
+## Development Workflow
+
+#### Migration Commands
+```bash
+# Development migration (generates and applies)
+pnpm prisma migrate dev --name description
+
+# Production migration (apply only)  
+pnpm prisma migrate deploy
+
+# Reset database (dev only)
+pnpm prisma migrate reset
+```
+
+#### Code Generation
+```bash
+# Regenerate client after schema changes
+pnpm prisma generate
+
+# Open Prisma Studio for data management
+pnpm prisma studio
+```
+
+#### Database Seeding
+- **Location**: `prisma/seed.ts`
+- **Run**: `pnpm prisma db seed`
+- **Include**: Representative test data for development
+- **Idempotent**: Safe to run multiple times
+
+## Integration with Next.js
+
+#### Server Components Pattern
+```typescript
+import { getPostsWithAuthor } from '@/lib/db/post'
+
+export default async function PostsPage() {
+  const posts = await getPostsWithAuthor()
+  
+  return (
+    <div>
+      {posts.map(post => (
+        <article key={post.id}>
+          <h2>{post.title}</h2>
+          <p>Author: {post.author.name}</p>
+        </article>
+      ))}
+    </div>
+  )
+}
+```
+
+#### Server Actions Pattern
+```typescript
+'use server'
+
+import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(formData: FormData) {
+  try {
+    const title = formData.get('title') as string
+    const content = formData.get('content') as string
+    
+    await prisma.post.create({
+      data: { title, content, authorId: 'user-id' }
+    })
+    
+    revalidatePath('/posts')
+  } catch (error) {
+    console.error('Post creation error:', error)
+    throw new Error('Failed to create post')
+  }
+}
+```
+
+## Security Guidelines
+
+#### Input Validation
+- **Always validate** form data before database operations
+- **Use Zod** or similar validation library
+- **Sanitize** user input appropriately
+
+#### Access Control
+- **Implement authorization** checks before data access
+- **Use row-level security** where appropriate  
+- **Never expose** sensitive data in queries
+
+#### Connection Security
+- **Use environment variables** for database credentials
+- **Configure connection pooling** for production
+- **Enable SSL** for production database connections
+
+## Monitoring & Debugging
+
+#### Query Logging
+```typescript
+// Enable in development
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+})
+```
+
+#### Performance Monitoring
+- **Log slow queries** (>100ms)
+- **Monitor connection pool** usage
+- **Track query frequency** patterns
+
+## Testing Guidelines
+
+#### Unit Testing Database Functions
+```typescript
+// Mock Prisma client for unit tests
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    post: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+  },
+}))
+```
+
+#### Integration Testing
+- **Use test database** separate from development
+- **Reset state** between tests
+- **Test error scenarios** and edge cases
+- **Use test database** separate from development
+- **Reset state** between tests
+- **Test error scenarios** and edge cases---
+# Database Guidelines (Prisma)
+
+This document outlines the database usage patterns and best practices for this project using Prisma ORM with MySQL.
+
+## Prisma Setup & Configuration
+
+### Core Configuration
+- **ORM**: Prisma (latest stable version)
+- **Database**: MySQL
+- **Client**: `@/lib/prisma.ts` - Singleton pattern for Next.js
+- **Schema**: `prisma/schema.prisma`
+- **Migrations**: `prisma/migrations/`
+- **Seeding**: `prisma/seed.ts`
+
+#### Environment Variables
+```env
+# .env.local
+DATABASE_URL="mysql://username:password@localhost:3306/database_name"
+```
+
+## Data Access Layer Structure
+
+#### Location & Organization
+- **Data Access Functions**: `src/lib/db/` directory
+- **Naming Convention**: One file per model (e.g., `post.ts`, `user.ts`)
+- **Function Naming**: Descriptive verbs (`getPostsWithAuthor`, `createPost`, `updateUserById`)
+
+#### Required Pattern for Data Access Functions
+```typescript
+import { prisma } from '@/lib/prisma'
+import type { Post as PrismaPost } from '@prisma/client'
+
+export async function getPostsWithAuthor(): Promise<PostWithAuthor[]> {
+  try {
+    return await prisma.post.findMany({
+      include: { author: true },
+      where: { published: true },
+    })
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+### Type Safety Requirements
+
+#### Generated Types Usage
+```typescript
+// Use generated types from Prisma
+import type { Post, User } from '@prisma/client'
+
+// Custom composite types in src/lib/types/database.ts
+export type PostWithAuthor = Post & {
+  author: User
+}
+```
+
+#### Type Annotations
+- **Always annotate return types** for exported functions
+- **Use union types** for conditional includes (e.g., `PostWithAuthor | PrismaPost | null`)
+- **Import with `import type`** when importing types only
+
+### Error Handling Standards
+
+#### Required Pattern
+```typescript
+export async function dataAccessFunction() {
+  try {
+    return await prisma.model.operation()
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+#### Error Handling Rules
+- **Always wrap** Prisma operations in try-catch
+- **Log original error** for debugging
+- **Throw user-friendly error** messages
+- **Don't expose internal database details** to users
+
+### Query Optimization
+
+#### Performance Guidelines
+- **Select only necessary fields** when possible
+- **Use `include` judiciously** - avoid deep nesting
+- **Implement pagination** for large datasets
+- **Add database indexes** for frequent queries
+- **Use transactions** for multi-table operations
+
+#### Example Optimized Query
+```typescript
+// Good: Selective fields and filtering
+export async function getPublishedPostSummaries() {
+  return await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      author: {
+        select: { name: true }
+      }
+    },
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+    take: 10
+  })
+}
+```
+
+### Schema Design Principles
+
+#### Naming Conventions
+- **Models**: `PascalCase` (e.g., `User`, `Post`)
+- **Fields**: `camelCase` (e.g., `createdAt`, `authorId`)
+- **Relations**: Descriptive names (e.g., `author`, `posts`)
+
+#### Required Fields
+- **IDs**: Use `cuid()` for primary keys
+- **Timestamps**: Always include `createdAt` and `updatedAt`
+- **Relations**: Proper foreign key constraints
+
+#### Example Schema Pattern
+```prisma
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("posts")
+}
+```
+
+## Development Workflow
+
+#### Migration Commands
+```bash
+# Development migration (generates and applies)
+pnpm prisma migrate dev --name description
+
+# Production migration (apply only)  
+pnpm prisma migrate deploy
+
+# Reset database (dev only)
+pnpm prisma migrate reset
+```
+
+#### Code Generation
+```bash
+# Regenerate client after schema changes
+pnpm prisma generate
+
+# Open Prisma Studio for data management
+pnpm prisma studio
+```
+
+#### Database Seeding
+- **Location**: `prisma/seed.ts`
+- **Run**: `pnpm prisma db seed`
+- **Include**: Representative test data for development
+- **Idempotent**: Safe to run multiple times
+
+## Integration with Next.js
+
+#### Server Components Pattern
+```typescript
+import { getPostsWithAuthor } from '@/lib/db/post'
+
+export default async function PostsPage() {
+  const posts = await getPostsWithAuthor()
+  
+  return (
+    <div>
+      {posts.map(post => (
+        <article key={post.id}>
+          <h2>{post.title}</h2>
+          <p>Author: {post.author.name}</p>
+        </article>
+      ))}
+    </div>
+  )
+}
+```
+
+#### Server Actions Pattern
+```typescript
+'use server'
+
+import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(formData: FormData) {
+  try {
+    const title = formData.get('title') as string
+    const content = formData.get('content') as string
+    
+    await prisma.post.create({
+      data: { title, content, authorId: 'user-id' }
+    })
+    
+    revalidatePath('/posts')
+  } catch (error) {
+    console.error('Post creation error:', error)
+    throw new Error('Failed to create post')
+  }
+}
+```
+
+## Security Guidelines
+
+#### Input Validation
+- **Always validate** form data before database operations
+- **Use Zod** or similar validation library
+- **Sanitize** user input appropriately
+
+#### Access Control
+- **Implement authorization** checks before data access
+- **Use row-level security** where appropriate  
+- **Never expose** sensitive data in queries
+
+#### Connection Security
+- **Use environment variables** for database credentials
+- **Configure connection pooling** for production
+- **Enable SSL** for production database connections
+
+## Monitoring & Debugging
+
+#### Query Logging
+```typescript
+// Enable in development
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+})
+```
+
+#### Performance Monitoring
+- **Log slow queries** (>100ms)
+- **Monitor connection pool** usage
+- **Track query frequency** patterns
+
+## Testing Guidelines
+
+#### Unit Testing Database Functions
+```typescript
+// Mock Prisma client for unit tests
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    post: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+  },
+}))
+```
+
+#### Integration Testing
+- **Use test database** separate from development
+- **Reset state** between tests
+- **Test error scenarios** and edge cases
+- **Use test database** separate from development
+- **Reset state** between tests
+- **Test error scenarios** and edge cases

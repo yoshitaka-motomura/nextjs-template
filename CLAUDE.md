@@ -1,98 +1,230 @@
-# CLAUDE.md
+# Claude Instructions for Next.js Template
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This document provides instructions for using Claude with a Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query + Zustand template project.
 
-## Development Commands
+## Project Overview
 
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build production app with Turbopack
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint (flat config)
-- `pnpm test` - Run Jest unit test suite
-- `pnpm test:watch` - Run Jest in watch mode
-- `pnpm e2e` - Run Playwright E2E tests
-- `pnpm e2e:ui` - Run E2E tests in UI mode (interactive)
-- `pnpm e2e:headed` - Run E2E tests with visible browser
-- `pnpm e2e:report` - Show E2E test report
-- `pnpm format` - Format code with Prettier
-- `pnpm format:check` - Check formatting with Prettier
+- **Framework**: Next.js 15.5.0 (App Router + Turbopack)
+- **Runtime**: React 19.1.0
+- **Language**: TypeScript 5 (strict mode)
+- **Styling**: Tailwind CSS v4
+- **Database**: Prisma ORM + MySQL
+- **State Management**: Zustand
+- **Data Fetching**: React Query (TanStack Query)
+- **UI Components**: shadcn/ui + Radix UI
+- **Form Handling**: React Hook Form + Zod
+- **Testing**: Jest + Testing Library + Playwright
 
-## Project Architecture
+## Technology Stack Details
 
-This is a Next.js 15 project using the App Router architecture with the following key technologies:
+### Frontend
 
-### Core Stack
-- **Framework**: Next.js 15.5.0 with App Router
-- **React**: 19.1.0
-- **TypeScript**: Full TypeScript setup with strict mode
-- **Styling**: Tailwind CSS v4 with PostCSS
-- **UI Components**: shadcn/ui (configured via `components.json`), Radix Label/Slot
-- **Icons**: react-icons
-- **Testing/Formatting/Linting**: Jest (jsdom + babel-jest), Playwright (E2E), Prettier, ESLint v9 flat config
-- **Bundler**: Turbopack enabled for dev and build
+- **Next.js 15.5.0**: App Router, Turbopack, Server Components
+- **React 19.1.0**: Latest React features and performance optimizations
+- **TypeScript 5**: strict mode, comprehensive type safety
+- **Tailwind CSS v4**: Utility-first CSS with latest features
 
-### Project Structure
-- `src/app/` - App Router pages and layouts
-- `src/app/globals.css` - Global styles (Tailwind v4)
-- `src/app/layout.tsx` - Root layout
-- `src/app/page.tsx` - Home page component
-- `src/app/api/health/route.ts` - Health check endpoint (GET/HEAD, no-cache)
-- `src/components/ui/` - shadcn/ui components (e.g., `button.tsx`, `input.tsx`)
-- `src/lib/` - Shared utilities and actions
-  - `src/lib/utils.ts` - Utility helpers (added by shadcn init)
-  - `src/lib/actions/` - Shared Server Actions (cross-page usage)
-- `src/__tests__/` - Unit tests (Jest)
-- `e2e/` - End-to-end tests (Playwright)
-- `public/` - Static assets (`images/`, `fonts/`, SVG icons)
-- `components.json` - shadcn/ui configuration
+### Database & State Management
 
-#### Page-Specific Organization
-For page-specific components and Server Actions, organize them within each route directory:
+- **Prisma ORM**: Type-safe database operations with MySQL support
+- **Zustand**: Lightweight and simple state management
+- **React Query**: Server state management, caching, and synchronization
 
+### UI & Forms
+
+- **shadcn/ui**: Reusable UI components
+- **Radix UI**: Accessible primitive components
+- **React Hook Form**: Performance-focused form management
+- **Zod**: Type-safe schema validation
+
+### Development & Testing
+
+- **ESLint v9**: Flat configuration, code quality management
+- **Prettier**: Code formatting consistency
+- **Jest**: Unit testing, Testing Library
+
+## Development Guidelines
+
+### Architecture Principles
+
+1. **Server First**: Default to Server Components, use `"use client"` only when necessary
+2. **Type Safety**: TypeScript strict mode, comprehensive type safety
+3. **Performance**: Turbopack, React 19 optimizations, appropriate caching strategies
+4. **Accessibility**: ARIA attributes, semantic HTML, keyboard navigation
+
+### File Organization Rules
+
+- **Pages**: `src/app/**/page.tsx`
+- **Layouts**: `src/app/**/layout.tsx`
+- **API Routes**: `src/app/api/**/route.ts`
+- **Components**: `src/components/**/*.tsx`
+- **Utilities**: `src/lib/**/*.ts`
+- **Database**: `src/lib/db/**/*.ts`
+- **Types**: `src/lib/types/**/*.ts`
+
+### Database Design
+
+- **Prisma Schema**: `prisma/schema.prisma`
+- **Data Access**: `src/lib/db/**/*.ts`
+- **Migrations**: `prisma/migrations/`
+- **Seeding**: `prisma/seed.ts`
+
+### State Management Patterns
+
+- **Server State**: React Query (TanStack Query)
+- **Client State**: Zustand
+- **Form State**: React Hook Form + Zod
+- **URL State**: Next.js App Router
+
+## Implementation Patterns
+
+### Server Components
+
+```typescript
+// Default to Server Component
+export default async function Page() {
+  const data = await fetchData()
+  return <div>{data}</div>
+}
 ```
-src/app/[route]/
-├── _components/          # Page-specific components (underscore prevents routing)
-│   ├── ComponentName.tsx
-│   └── FormComponent.tsx
-├── _actions/            # Page-specific Server Actions (underscore prevents routing)
-│   ├── create-item.ts   # One action per file (recommended)
-│   ├── update-item.ts
-│   └── delete-item.ts
-├── page.tsx
-└── layout.tsx
+
+### Client Components
+
+```typescript
+'use client'
+// Only when client-side is necessary
+export function InteractiveComponent() {
+  const [state, setState] = useState()
+  return <button onClick={() => setState()}>Click</button>
+}
 ```
 
-**Guidelines:**
-- Use `_components/` for components used only within that route
-- Use `_actions/` for Server Actions specific to that route
-- Name action files by function (e.g., `create-user.ts`, `update-profile.ts`)
-- Each action file should contain related Server Actions with `'use server'` directive
-- Global/shared components go in `src/components/ui/`
-- Global/shared Server Actions go in `src/lib/actions/`
+### API Routes
 
-### Configuration Files
-- `next.config.ts` - Next.js config
-- `tsconfig.json` - TypeScript config with `@/*` path mapping to `src/*`
-- `eslint.config.mjs` - ESLint v9 flat config with Next.js presets
-- `postcss.config.mjs` - PostCSS config for Tailwind CSS v4
-- `playwright.config.ts` - Playwright E2E test configuration
-- `components.json` - shadcn/ui configuration (style, aliases, base color)
+```typescript
+// src/app/api/example/route.ts
+import { NextResponse } from 'next/server'
 
-### Key Features
-- **UI**: shadcn/ui components scaffolded into `src/components/ui`
-- **Icons**: Use `react-icons` (not lucide-react)
-- **Health Endpoint**: `/api/health` returns `{ status: "ok", timestamp }`, caching disabled
-- **Testing**: Unit tests (Jest) + E2E tests (Playwright) with multi-browser support
-- **Font Optimization**: Uses Geist Sans and Geist Mono via next/font/google
-- **Dark Mode**: CSS custom properties with prefers-color-scheme support
-- **Modern Tooling**: ESLint v9, TypeScript 5, Tailwind v4
+export async function GET() {
+  return NextResponse.json({ message: 'Hello' })
+}
+```
 
-### Development Notes
-- Uses pnpm as package manager
-- Turbopack enabled for faster builds and dev server
-- Path alias `@/*` maps to `src/*` for clean imports
-- Strict TypeScript configuration with noEmit for type checking only
-- When editing UI, prefer Tailwind utilities and existing shadcn/ui patterns
-- Jest runs in `jsdom` environment; CSS imports are mapped via `identity-obj-proxy`
-- Playwright tests run against production build across Chrome, Firefox, Safari, and mobile browsers
-- E2E tests cover critical user workflows and API endpoints with semantic selectors
+### Database Operations
+
+```typescript
+// src/lib/db/example.ts
+import { prisma } from '@/lib/prisma'
+
+export async function getData() {
+  try {
+    return await prisma.model.findMany()
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+### State Management
+
+```typescript
+// Zustand store
+import { create } from 'zustand'
+
+export const useStore = create((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+}))
+```
+
+## Testing Strategy
+
+### Unit Testing
+
+- **Jest**: Testing framework
+- **Testing Library**: DOM manipulation and user interactions
+- **Coverage**: Critical business logic coverage
+
+## Performance Optimization
+
+### Next.js 15.5.0
+
+- **Turbopack**: Fast development builds
+- **App Router**: Efficient routing and rendering
+- **Server Components**: Reduced client-side JavaScript
+
+### React 19
+
+- **Concurrent Features**: Asynchronous rendering
+- **Automatic Batching**: State update optimizations
+- **Suspense**: Improved data fetching
+
+### Tailwind CSS v4
+
+- **CSS Variables**: Dynamic theme switching
+- **Improved Performance**: More efficient CSS generation
+- **Modern Features**: Latest CSS capabilities
+
+## Security & Best Practices
+
+### Database
+
+- **Input Validation**: Schema validation with Zod
+- **SQL Injection**: Automatic escaping with Prisma
+- **Access Control**: Proper authentication and authorization
+
+### API
+
+- **Rate Limiting**: Appropriate rate limiting
+- **Input Sanitization**: User input sanitization
+- **Error Handling**: Prevent sensitive information exposure
+
+### Frontend
+
+- **XSS Prevention**: React's built-in XSS protection
+- **CSRF Protection**: Appropriate CSRF countermeasures
+- **Content Security Policy**: CSP header configuration
+
+## Deployment
+
+### Environment Configuration
+
+- **Development**: Local development environment
+- **Staging**: Staging environment
+- **Production**: Production environment
+
+### Build Optimization
+
+- **Turbopack**: Fast development builds
+- **Tree Shaking**: Unused code removal
+- **Code Splitting**: Appropriate code splitting
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Prisma Client**: Run `pnpm prisma generate`
+2. **TypeScript Errors**: Check and fix type definitions
+3. **Build Issues**: Verify dependencies and updates
+4. **Performance**: React DevTools, Next.js Analytics
+
+### Debug Tools
+
+- **React DevTools**: Component state inspection
+- **Next.js Analytics**: Performance metrics
+- **Prisma Studio**: Database visualization
+
+## References
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [TanStack Query Documentation](https://tanstack.com/query)
+- [Zustand Documentation](https://github.com/pmndrs/zustand)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com)
+
+---
+
+Use this template to develop high-quality, maintainable Next.js applications.

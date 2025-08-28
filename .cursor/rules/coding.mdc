@@ -1,8 +1,13 @@
-## Coding Guidelines — myapps-nextjs
+---
+alwaysApply: true
+---
+
+## Coding Guidelines
 
 This document outlines the "basic implementation guidelines" for this repository. It avoids excessive generalizations and focuses on minimal principles that are useful for practical decision-making.
 
-### TypeScript
+## TypeScript
+
 - **Type Safety First**: Prohibit casual use of `any`/`unknown`. Keep type holes narrow and closed.
 - **Explicit Types for Public APIs**: Annotate arguments and return values for exported functions/components.
 - **Leverage Union/Discriminated Union**: Prefer union types over `enum`. Use tagged unions for discrimination.
@@ -10,37 +15,133 @@ This document outlines the "basic implementation guidelines" for this repository
 - **Promise/async**: Use `async/await` as default. Don't leave unhandled Promises.
 - **Utilities**: Place reusable functions in `src/lib/utils.ts` or `src/lib/utils/`.
 
-### Naming & Structure
+## Naming & Structure
+
 - **Naming**: No abbreviations. Functions use verbs/phrases, variables use nouns/phrases. Unify `is/has/can/should` for boolean values.
 - **Components**: `PascalCase`. Hooks use `use*`. Constants use `UPPER_SNAKE_CASE` only when necessary.
 - **Import Order**: External → Aliases (`@/*`) → Relative. Types use `import type`.
 - **Early Return**: Keep nesting shallow. Reduce branching with guard clauses.
 
-### React / Next.js (App Router)
+## React / Next.js (App Router)
+
 - **Server First**: Default to server components. Use `"use client"` only when client-side is necessary.
 - **Props Design**: Explicit types. Split/complexify complex Props. Reduce branching with default values.
+- **State Management**: Use Zustand for client-side state. Keep stores lightweight and focused on specific domains.
 - **State Minimization**: Don't hold derived state. Consolidate side effects in `useEffect` with accurate dependency arrays.
 - **Keys/Lists**: Stable keys required. Array index is last resort.
 - **Accessibility**: Thorough implementation of `aria-*`, label-related attributes, and focus management.
 - **Routing**: Place APIs in `src/app/api/**/route.ts`. Use `NextResponse` with explicit headers and appropriate status codes.
 - **Fetch/Cache**: Document strategy (`{ cache: 'no-store' }` or `{ next: { revalidate } }`).
 
-### UI (Tailwind v4 / shadcn/ui)
+## UI (Tailwind v4 / shadcn/ui)
+
 - **Utility First**: Start with Tailwind. Don't increase duplicate custom CSS.
 - **Class Combination**: Use `clsx` + `tailwind-merge`. Avoid string concatenation.
 - **Arbitrary Values with Restraint**: Prioritize design scale. Variable-ize necessary arbitrary values.
 - **Components**: Common UI goes in `src/components/ui/*`. Add with `pnpm dlx shadcn add <component>`.
 - **Icons**: Use `react-icons` (e.g., `import { FaGithub } from 'react-icons/fa'`).
 
-### Error Handling / Logging
+## Error Handling / Logging
+
 - **Guards and Fallbacks**: Guard user input/external I/O and provide user-understandable failure modes.
 - **Exceptions**: Only `throw` in truly exceptional cases. Use explicit return values for recoverable situations.
 
-### Format / Lint / Test
+## Format / Lint / Test
+
 - **Format**: Follow Prettier (`pnpm format`).
 - **Lint**: Comply with ESLint v9 flat config (`pnpm lint`).
 - **Testing**: Jest (`jsdom` + `babel-jest`). Manipulate/verify DOM using Testing Library patterns.
 
-### Git / Commits
+## Git / Commits
+
+- **Conventional Commits**: `feat/fix/chore/refactor/docs/test`. Messages explain Why in 1-2 sentences.
+- **Granularity**: One commit, one intention. Minimize inclusion of auto-generated files.
+
+## Database (Prisma)
+
+- **ORM**: Prisma (latest stable version)
+- **Database**: MySQL
+- **Client**: `@/lib/prisma.ts` - Singleton pattern for Next.js
+- **Schema**: `prisma/schema.prisma`
+- **Migrations**: `prisma/migrations/`
+- **Seeding**: `prisma/seed.ts`
+
+### Data Access Layer Structure
+
+- **Location & Organization**: `src/lib/db/` directory
+- **Naming Convention**: One file per model (e.g., `post.ts`, `user.ts`)
+- **Function Naming**: Descriptive verbs (`getPostsWithAuthor`, `createPost`, `updateUserById`)
+
+### Required Pattern for Data Access Functions
+
+```typescript
+import { prisma } from '@/lib/prisma'
+import type { Post as PrismaPost } from '@prisma/client'
+
+export async function getPostsWithAuthor(): Promise<PostWithAuthor[]> {
+  try {
+    return await prisma.post.findMany({
+      include: { author: true },
+      where: { published: true },
+    })
+  } catch (error) {
+    console.error('Database error:', error)
+    throw new Error('Database error')
+  }
+}
+```
+
+### Type Safety Requirements
+
+- **Generated Types Usage**: Use generated types from Prisma
+- **Type Annotations**: Always annotate return types for exported functions
+- **Union Types**: Use union types for conditional includes (e.g., `PostWithAuthor | PrismaPost | null`)
+
+### Error Handling Standards
+
+- **Required Pattern**: Always wrap Prisma operations in try-catch
+- **Error Handling Rules**: Log original error for debugging, throw user-friendly error messages, don't expose internal database details to users
+
+## State Management (Zustand + React Query)
+
+- **Client State**: Zustand for client-side state management
+- **Server State**: React Query (TanStack Query) for server state management
+- **Store Organization**: Place in `src/lib/store/` organized by domain
+- **Devtools**: Enable Zustand devtools in development
+
+### Zustand Store Pattern
+
+```typescript
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+
+interface CounterState {
+  count: number
+  increment: () => void
+  decrement: () => void
+}
+
+export const useCounterStore = create<CounterState>()(
+  devtools((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 }), false, 'counter/increment'),
+    decrement: () => set((state) => ({ count: state.count - 1 }), false, 'counter/decrement'),
+  })),
+)
+```
+
+## Internationalization (next-intl)
+
+- **Messages**: Locale-specific messages in `src/messages/` directory
+- **Provider**: Wrap application with `IntlProvider`
+- **Hooks**: Use `useTranslations` to get translation functions
+- **Testing**: Use `withIntl` helper function for tests
+
+## テスト戦略
+
+- **Unit/Component**: Jest + Testing Library (React)
+- **Placement Conventions**: ユニットは`src/**/__tests__/**/*.{test,spec}.{ts,tsx}`
+- **Testing Policy**: 最小限のモック、安定性、実装結合の削減、公開API/動作の検証
+
 - **Conventional Commits**: `feat/fix/chore/refactor/docs/test`. Messages explain Why in 1-2 sentences.
 - **Granularity**: One commit, one intention. Minimize inclusion of auto-generated files.
