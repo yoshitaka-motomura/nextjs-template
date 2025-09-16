@@ -1,6 +1,6 @@
 # Next.js Template
 
-Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query + Zustand のテンプレートプロジェクト
+モダンなNext.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query + Zustand テンプレート
 
 ## 技術スタック
 
@@ -53,7 +53,7 @@ Next.js 15.5.0 + React 19 + TypeScript + Tailwind CSS v4 + Prisma + React Query 
 | zod                            | ^4.1.4     | スキーマバリデーション             | データ検証           |
 | dayjs                          | ^1.11.13   | 軽量な日時ライブラリ               | 日時処理             |
 | react-icons                    | ^5.5.0     | React用アイコンライブラリ          | アイコン表示         |
-| hono                           | ^4.9.4     | 軽量Webフレームワーク              | API ルート           |
+| hono                           | ^4.9.7     | 軽量Webフレームワーク              | API ルート           |
 
 ## セットアップ
 
@@ -107,7 +107,7 @@ pnpm format           # Prettier実行
 pnpm format:check     # Prettierチェック
 
 # テスト
-pnpm test:unit        # ユニットテスト実行
+pnpm test             # テスト実行
 pnpm test:watch       # テストウォッチモード
 
 # データベース
@@ -164,12 +164,15 @@ NODE_ENV=development
 
 ## 開発ガイドライン
 
-詳細な開発ガイドラインは以下のファイルを参照してください：
+詳細な開発ガイドラインについては [AGENTS.md](./AGENTS.md) を参照してください。
 
-- [コーディングガイドライン](.cursor/rules/coding.mdc)
-- [エディタルール](.cursor/rules/editor.mdc)
-- [データベースガイドライン](.cursor/rules/database.mdc)
-- [テストガイドライン](.cursor/rules/tests.mdc)
+このファイルには以下の内容が含まれています：
+- コーディング標準とベストプラクティス
+- アーキテクチャ原則
+- 技術固有の実装パターン
+- テスト戦略
+- セキュリティガイドライン
+- コミットルールとGit運用
 
 ## ライセンス
 
